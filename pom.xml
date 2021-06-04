@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.frengor</groupId>
+    <artifactId>ultimateadvancementapi-tests</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>UltimateAdvancementAPI-Tests</name>
+    <description>Test plugin for UltimateAdvancementAPI.</description>
+    <url>https://github.com/frengor/UltimateAdvancementAPI/tree/tests</url>
+    <inceptionYear>2021</inceptionYear>
+
+    <developers>
+        <developer>
+            <id>fren_gor</id>
+            <url>http://www.frengor.com</url>
+        </developer>
+        <developer>
+            <id>EscanorTargaryen</id>
+            <url>https://www.escanortargaryen.ml/</url>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
+        </license>
+    </licenses>
+
+    <properties>
+        <!-- Project Properties -->
+        <projectEncoding>UTF-8</projectEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <repositories>
+        <!-- fren_gor -->
+        <repository>
+            <id>fren_gor</id>
+            <url>https://nexus.frengor.com/repository/public/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- UltimateAdvancementAPI -->
+        <dependency>
+            <groupId>com.frengor</groupId>
+            <artifactId>ultimateadvancementapi</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- JetBrains Annotations -->
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>19.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Spigot 1.15.2 -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.15.2-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.12</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <finalName>${project.name}-${project.version}</finalName>
+        <defaultGoal>clean install</defaultGoal>
+        <resources>
+            <resource>
+                <filtering>false</filtering>
+                <directory>.</directory>
+                <includes>
+                    <include>LICENSE</include>
+                    <include>LGPL</include>
+                    <include>NOTICE</include>
+                </includes>
+            </resource>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/resources/</directory>
+            </resource>
+        </resources>
+    </build>
+
+</project>
