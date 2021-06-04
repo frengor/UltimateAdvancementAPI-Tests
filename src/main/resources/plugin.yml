@@ -1,0 +1,14 @@
+main: com.fren_gor.ultimateAdvancementAPITests.UltimateAdvancementAPITests
+name: ${project.name}
+version: ${project.version}
+description: ${project.description}
+author: [fren_gor, EscanorTargaryen]
+website: ${project.url}
+
+api-version: 1.15
+
+depend: [UltimateAdvancementAPI]
+
+commands:
+  testadv:
+    description: Test command
