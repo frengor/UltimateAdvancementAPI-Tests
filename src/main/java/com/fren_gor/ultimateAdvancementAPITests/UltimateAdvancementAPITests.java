@@ -52,13 +52,19 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
 
         Test1Root root = new Test1Root(test1Tab, "root", new AdvancementDisplay(Material.NETHER_STAR, "§eTest Root", AdvancementFrameType.TASK, true, true, 0, 2, "Hello!"), "textures/block/stone.png");
 
-        Test1Advancement adv_1_1 = new Test1Advancement(test1Tab, "1_1", new AdvancementDisplay(Material.GRASS_BLOCK, "(1, 1)", AdvancementFrameType.GOAL, true, true, 1, 1), root, 5);
+        Test1Advancement adv_1_1 = new Test1Advancement(test1Tab, "1_1", new AdvancementDisplay(Material.GRASS_BLOCK, "(1, 1)", AdvancementFrameType.GOAL, true, true, 1, 1), root, 5) {
+            @Override
+            public boolean isVisible(@NotNull UUID uuid) {
+                return false;
+            }
+        };
         Test1Advancement adv_1_3 = new Test1Advancement(test1Tab, "1_3", new AdvancementDisplay(Material.GRAVEL, "(1, 3)", AdvancementFrameType.TASK, true, false, 1, 3, "Row 1", "Row 2"), root, 5);
         Test1Advancement adv_2_2 = new Test1Advancement(test1Tab, "2_2", new AdvancementDisplay(Material.STICKY_PISTON, "(2, 2)", AdvancementFrameType.TASK, true, true, 2, 2), root, 7);
+        Test1Advancement adv_2_1 = new Test1Advancement(test1Tab, "2_1", new AdvancementDisplay(Material.STICKY_PISTON, "(2, 1)", AdvancementFrameType.TASK, true, true, 2, 1), adv_1_1, 7);
 
         MultiParent multi = new MultiParent(test1Tab, "multi", new AdvancementDisplay(Material.OAK_SAPLING, "§lSaplings", AdvancementFrameType.CHALLENGE, true, true, 3, 2.5f, "§6Description:", "§7Chop trees and get 5 saplings.", "", "§6Rewards:", "§74 Oak saplings.", "§74 Birch saplings.", "§74 Spruce saplings.", "§74 Dark Oak saplings.", "§74 Jungle saplings."), 10, adv_2_2, adv_1_3);
 
-        test1Tab.registerAdvancements(root, adv_1_1, adv_1_3, adv_2_2, multi);
+        test1Tab.registerAdvancements(root, adv_1_1, adv_1_3, adv_2_2, adv_2_1, multi);
     }
 
     @EventHandler
@@ -148,10 +154,17 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                 break;
             }
             case "dump": { // Dump database manager
-                synchronized (AdvancementMain.getInstance().getDatabaseManager()) {
+                AdvancementMain main;
+                try {
+                    main = getMain();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                synchronized (main.getDatabaseManager()) {
                     System.out.println("ProgressionCache:");
                     try {
-                        for (Entry<UUID, TeamProgression> e : getProgressionCache(AdvancementMain.getInstance().getDatabaseManager()).entrySet()) {
+                        for (Entry<UUID, TeamProgression> e : getProgressionCache(main.getDatabaseManager()).entrySet()) {
                             StringJoiner j = new StringJoiner(", ");
                             e.getValue().forEachMember(u -> j.add(u.toString()));
                             System.out.println(e.getKey() + " -> " + e.getValue().toString() + '[' + j + ']');
@@ -162,7 +175,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     System.out.println("--------------------------");
                     System.out.println("TempLoaded:");
                     try {
-                        for (Entry<UUID, Object> e : getTempLoaded(AdvancementMain.getInstance().getDatabaseManager()).entrySet()) {
+                        for (Entry<UUID, Object> e : getTempLoaded(main.getDatabaseManager()).entrySet()) {
                             System.out.print(e.getKey() + " -> TempUserMetadata:{");
                             System.out.print("\tIsOnline:" + isOnline(e.getValue()));
                             StringJoiner j = new StringJoiner(", ");
@@ -287,5 +300,10 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         tempLoaded.setAccessible(true);
 
         return (Map<UUID, Object>) tempLoaded.get(manager);
+    }
+
+    private static AdvancementMain getMain() throws Exception {
+        Field main = UltimateAdvancementAPI.class.getDeclaredField("main");
+        return (AdvancementMain) main.get(null);
     }
 }
