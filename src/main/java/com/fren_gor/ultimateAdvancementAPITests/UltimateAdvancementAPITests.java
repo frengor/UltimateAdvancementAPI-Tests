@@ -42,10 +42,18 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
     @Getter
     private AdvancementTab test1Tab;
     private UltimateAdvancementAPI API;
+    private AdvancementMain main;
+
+    @Override
+    public void onLoad() {
+        main = new AdvancementMain(this);
+        main.load();
+    }
 
     @Override
     public void onEnable() {
         instance = this;
+        main.enableMySQL("root", "", "advancements", "127.0.0.1", 3306, 5, 6000);
         API = UltimateAdvancementAPI.getInstance(this);
         Bukkit.getPluginManager().registerEvents(this, this);
         test1Tab = API.createAdvancementTab("test1");
@@ -60,6 +68,11 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         MultiParent multi = new MultiParent(test1Tab, "multi", new AdvancementDisplay(Material.OAK_SAPLING, "§lSaplings", AdvancementFrameType.CHALLENGE, true, true, 3, 2.5f, "§6Description:", "§7Chop trees and get 5 saplings.", "", "§6Rewards:", "§74 Oak saplings.", "§74 Birch saplings.", "§74 Spruce saplings.", "§74 Dark Oak saplings.", "§74 Jungle saplings."), 10, adv_2_2, adv_1_3);
 
         test1Tab.registerAdvancements(root, adv_1_1, adv_1_3, adv_2_2, adv_2_1, multi);
+    }
+
+    @Override
+    public void onDisable() {
+        main.disable();
     }
 
     @EventHandler

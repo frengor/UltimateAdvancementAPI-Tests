@@ -7,7 +7,7 @@ website: ${project.url}
 
 api-version: 1.15
 
-depend: [UltimateAdvancementAPI]
+#depend: [UltimateAdvancementAPI]
 
 commands:
   testadv:
