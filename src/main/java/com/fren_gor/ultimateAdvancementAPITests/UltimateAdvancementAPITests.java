@@ -52,12 +52,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
 
         Test1Root root = new Test1Root(test1Tab, "root", new AdvancementDisplay(Material.NETHER_STAR, "§eTest Root", AdvancementFrameType.TASK, true, true, 0, 2, "Hello!"), "textures/block/stone.png");
 
-        Test1Advancement adv_1_1 = new Test1Advancement(test1Tab, "1_1", new AdvancementDisplay(Material.GRASS_BLOCK, "(1, 1)", AdvancementFrameType.GOAL, true, true, 1, 1), root, 5) {
-            @Override
-            public boolean isVisible(@NotNull UUID uuid) {
-                return false;
-            }
-        };
+        Test1Advancement adv_1_1 = new Test1Advancement(test1Tab, "1_1", new AdvancementDisplay(Material.GRASS_BLOCK, "(1, 1)", AdvancementFrameType.GOAL, true, true, 1, 1), root, 5);
         Test1Advancement adv_1_3 = new Test1Advancement(test1Tab, "1_3", new AdvancementDisplay(Material.GRAVEL, "(1, 3)", AdvancementFrameType.TASK, true, false, 1, 3, "Row 1", "Row 2"), root, 5);
         Test1Advancement adv_2_2 = new Test1Advancement(test1Tab, "2_2", new AdvancementDisplay(Material.STICKY_PISTON, "(2, 2)", AdvancementFrameType.TASK, true, true, 2, 2), root, 7);
         Test1Advancement adv_2_1 = new Test1Advancement(test1Tab, "2_1", new AdvancementDisplay(Material.STICKY_PISTON, "(2, 1)", AdvancementFrameType.TASK, true, true, 2, 1), adv_1_1, 7);
@@ -85,6 +80,14 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
             return false;
         }
         switch (args[0]) {
+            case "remove": {
+                try {
+                    AdvancementUtils.disableVanillaAdvancements();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
             case "toast": {
                 if (sender instanceof Player) {
                     Player p = (Player) sender;
