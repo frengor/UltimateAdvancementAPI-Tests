@@ -1,5 +1,8 @@
-package com.fren_gor.ultimateAdvancementAPITests;
+package com.fren_gor.testUltimateAdvancementAPI;
 
+import com.fren_gor.testUltimateAdvancementAPI.test1.MultiParent;
+import com.fren_gor.testUltimateAdvancementAPI.test1.Test1Advancement;
+import com.fren_gor.testUltimateAdvancementAPI.test1.Test1Root;
 import com.fren_gor.ultimateAdvancementAPI.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.AdvancementFrameType;
 import com.fren_gor.ultimateAdvancementAPI.AdvancementMain;
@@ -11,9 +14,6 @@ import com.fren_gor.ultimateAdvancementAPI.database.DatabaseManager;
 import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
 import com.fren_gor.ultimateAdvancementAPI.events.PlayerLoadingCompletedEvent;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
-import com.fren_gor.ultimateAdvancementAPITests.test1.MultiParent;
-import com.fren_gor.ultimateAdvancementAPITests.test1.Test1Advancement;
-import com.fren_gor.ultimateAdvancementAPITests.test1.Test1Root;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

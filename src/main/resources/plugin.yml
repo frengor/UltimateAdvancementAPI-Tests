@@ -1,4 +1,4 @@
-main: com.fren_gor.ultimateAdvancementAPITests.UltimateAdvancementAPITests
+main: com.fren_gor.testUltimateAdvancementAPI.UltimateAdvancementAPITests
 name: ${project.name}
 version: ${project.version}
 description: ${project.description}

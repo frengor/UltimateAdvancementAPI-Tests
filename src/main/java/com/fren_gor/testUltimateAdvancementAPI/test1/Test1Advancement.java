@@ -1,18 +1,21 @@
-package com.fren_gor.ultimateAdvancementAPITests.test1;
+package com.fren_gor.testUltimateAdvancementAPI.test1;
 
 import com.fren_gor.ultimateAdvancementAPI.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.AdvancementTab;
-import com.fren_gor.ultimateAdvancementAPI.advancement.BaseAdvancement;
-import com.fren_gor.ultimateAdvancementAPI.advancement.MultiParentsAdvancement;
-import com.fren_gor.ultimateAdvancementAPI.visibilities.ParentGrantedVisibility;
+import com.fren_gor.ultimateAdvancementAPI.advancement.Advancement;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class MultiParent extends MultiParentsAdvancement implements ParentGrantedVisibility {
-    public MultiParent(@NotNull AdvancementTab advancementTab, @NotNull String key, @NotNull AdvancementDisplay display, int maxCriteria, @NotNull BaseAdvancement... parents) {
-        super(advancementTab, key, display, maxCriteria, parents);
+public class Test1Advancement extends BaseClass {
+
+    public Test1Advancement(@NotNull AdvancementTab advancementTab, @NotNull String key, @NotNull AdvancementDisplay display, @NotNull Advancement parent) {
+        this(advancementTab, key, display, parent, 1);
+    }
+
+    public Test1Advancement(@NotNull AdvancementTab advancementTab, @NotNull String key, @NotNull AdvancementDisplay display, @NotNull Advancement parent, int maxCriteria) {
+        super(advancementTab, key, display, parent, maxCriteria);
         registerEvent(BlockBreakEvent.class, e -> {
             if (e.getBlock().getType() == display.getIcon().getType()) {
                 incrementTeamCriteria(e.getPlayer());
@@ -24,4 +27,5 @@ public class MultiParent extends MultiParentsAdvancement implements ParentGrante
     public void giveReward(@NotNull Player player) {
         player.getInventory().addItem(new ItemStack(display.getIcon()));
     }
+
 }
