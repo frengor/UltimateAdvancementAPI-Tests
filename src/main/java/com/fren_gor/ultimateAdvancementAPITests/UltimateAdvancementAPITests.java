@@ -3,6 +3,7 @@ package com.fren_gor.ultimateAdvancementAPITests;
 import com.fren_gor.ultimateAdvancementAPI.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.AdvancementFrameType;
 import com.fren_gor.ultimateAdvancementAPI.AdvancementMain;
+import com.fren_gor.ultimateAdvancementAPI.AdvancementPlugin;
 import com.fren_gor.ultimateAdvancementAPI.AdvancementTab;
 import com.fren_gor.ultimateAdvancementAPI.UltimateAdvancementAPI;
 import com.fren_gor.ultimateAdvancementAPI.advancement.Advancement;
@@ -157,13 +158,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                 break;
             }
             case "dump": { // Dump database manager
-                AdvancementMain main;
-                try {
-                    main = getMain();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return false;
-                }
+                AdvancementMain main = AdvancementPlugin.getInstance().getMain();
                 synchronized (main.getDatabaseManager()) {
                     System.out.println("ProgressionCache:");
                     try {
@@ -303,10 +298,5 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         tempLoaded.setAccessible(true);
 
         return (Map<UUID, Object>) tempLoaded.get(manager);
-    }
-
-    private static AdvancementMain getMain() throws Exception {
-        Field main = UltimateAdvancementAPI.class.getDeclaredField("main");
-        return (AdvancementMain) main.get(null);
     }
 }
