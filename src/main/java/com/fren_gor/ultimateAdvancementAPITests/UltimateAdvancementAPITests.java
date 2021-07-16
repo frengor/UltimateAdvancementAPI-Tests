@@ -7,6 +7,7 @@ import com.fren_gor.ultimateAdvancementAPI.AdvancementPlugin;
 import com.fren_gor.ultimateAdvancementAPI.AdvancementTab;
 import com.fren_gor.ultimateAdvancementAPI.UltimateAdvancementAPI;
 import com.fren_gor.ultimateAdvancementAPI.advancement.Advancement;
+import com.fren_gor.ultimateAdvancementAPI.advancement.RootAdvancement;
 import com.fren_gor.ultimateAdvancementAPI.database.CacheFreeingOption;
 import com.fren_gor.ultimateAdvancementAPI.database.DatabaseManager;
 import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
@@ -15,6 +16,8 @@ import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
 import com.fren_gor.ultimateAdvancementAPITests.test1.MultiParent;
 import com.fren_gor.ultimateAdvancementAPITests.test1.Test1Advancement;
 import com.fren_gor.ultimateAdvancementAPITests.test1.Test1Root;
+import com.fren_gor.ultimateAdvancementAPITests.test2.Test2MultiTask;
+import com.fren_gor.ultimateAdvancementAPITests.test2.tasks.BreakTask;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -41,7 +44,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
     @Getter
     private static UltimateAdvancementAPITests instance;
     @Getter
-    private AdvancementTab test1Tab;
+    private AdvancementTab test1Tab, test2Tab;
     private UltimateAdvancementAPI API;
 
     @Override
@@ -61,12 +64,27 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         MultiParent multi = new MultiParent(test1Tab, "multi", new AdvancementDisplay(Material.OAK_SAPLING, "§lSaplings", AdvancementFrameType.CHALLENGE, true, true, 3, 2.5f, "§6Description:", "§7Chop trees and get 5 saplings.", "", "§6Rewards:", "§74 Oak saplings.", "§74 Birch saplings.", "§74 Spruce saplings.", "§74 Dark Oak saplings.", "§74 Jungle saplings."), 10, adv_2_2, adv_1_3);
 
         test1Tab.registerAdvancements(root, adv_1_1, adv_1_3, adv_2_2, adv_2_1, multi);
+
+        test2Tab = API.createAdvancementTab("test2");
+
+        RootAdvancement test2Root = new RootAdvancement(test2Tab, "root", new AdvancementDisplay(Material.OAK_SAPLING, "Root", AdvancementFrameType.TASK, false, false, 0, 0), "textures/block/stone.png");
+
+        Test2MultiTask tasks = new Test2MultiTask(test2Tab, "multi_tasks", new AdvancementDisplay(Material.STONE, "§6§lBreak blocks", AdvancementFrameType.GOAL, true, true, 1, 0, "", "Break blocks:", "-> 5 Oak planks", "-> 5 Spruce planks", "-> 5 Dark oak planks"), test2Root, 15);
+
+        BreakTask oak = new BreakTask(test2Tab, "oak", tasks, 5, Material.OAK_PLANKS);
+        BreakTask spruce = new BreakTask(test2Tab, "spruce", tasks, 5, Material.SPRUCE_PLANKS);
+        BreakTask darkOak = new BreakTask(test2Tab, "dark_oak", tasks, 5, Material.DARK_OAK_PLANKS);
+
+        tasks.registerTasks(oak, spruce, darkOak);
+        test2Tab.registerAdvancements(test2Root, tasks);
     }
 
     @EventHandler
     private void onPlayerLoading(PlayerLoadingCompletedEvent e) {
         test1Tab.showTab(e.getPlayer());
         test1Tab.grantRootAdvancement(e.getPlayer());
+        test2Tab.showTab(e.getPlayer());
+        test2Tab.grantRootAdvancement(e.getPlayer());
         System.out.println("Called");
         AdvancementUtils.displayToast(e.getPlayer(), new ItemStack(Material.GRASS_BLOCK), "Join", AdvancementFrameType.CHALLENGE);
     }
