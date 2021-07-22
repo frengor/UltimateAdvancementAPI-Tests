@@ -56,12 +56,12 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
 
         Test1Root root = new Test1Root(test1Tab, "root", new AdvancementDisplay(Material.NETHER_STAR, "§eTest Root", AdvancementFrameType.TASK, true, true, 0, 2, "Hello!"), "textures/block/stone.png");
 
-        Test1Advancement adv_1_1 = new Test1Advancement(test1Tab, "1_1", new AdvancementDisplay(Material.GRASS_BLOCK, "(1, 1)", AdvancementFrameType.GOAL, true, true, 1, 1), root, 5);
-        Test1Advancement adv_1_3 = new Test1Advancement(test1Tab, "1_3", new AdvancementDisplay(Material.GRAVEL, "(1, 3)", AdvancementFrameType.TASK, true, false, 1, 3, "Row 1", "Row 2"), root, 5);
-        Test1Advancement adv_2_2 = new Test1Advancement(test1Tab, "2_2", new AdvancementDisplay(Material.STICKY_PISTON, "(2, 2)", AdvancementFrameType.TASK, true, true, 2, 2), root, 7);
-        Test1Advancement adv_2_1 = new Test1Advancement(test1Tab, "2_1", new AdvancementDisplay(Material.STICKY_PISTON, "(2, 1)", AdvancementFrameType.TASK, true, true, 2, 1), adv_1_1, 7);
+        Test1Advancement adv_1_1 = new Test1Advancement("1_1", new AdvancementDisplay(Material.GRASS_BLOCK, "(1, 1)", AdvancementFrameType.GOAL, true, true, 1, 1), root, 5);
+        Test1Advancement adv_1_3 = new Test1Advancement("1_3", new AdvancementDisplay(Material.GRAVEL, "(1, 3)", AdvancementFrameType.TASK, true, false, 1, 3, "Row 1", "Row 2"), root, 5);
+        Test1Advancement adv_2_2 = new Test1Advancement("2_2", new AdvancementDisplay(Material.STICKY_PISTON, "(2, 2)", AdvancementFrameType.TASK, true, true, 2, 2), root, 7);
+        Test1Advancement adv_2_1 = new Test1Advancement("2_1", new AdvancementDisplay(Material.STICKY_PISTON, "(2, 1)", AdvancementFrameType.TASK, true, true, 2, 1), adv_1_1, 7);
 
-        MultiParent multi = new MultiParent(test1Tab, "multi", new AdvancementDisplay(Material.OAK_SAPLING, "§lSaplings", AdvancementFrameType.CHALLENGE, true, true, 3, 2.5f, "§6Description:", "§7Chop trees and get 5 saplings.", "", "§6Rewards:", "§74 Oak saplings.", "§74 Birch saplings.", "§74 Spruce saplings.", "§74 Dark Oak saplings.", "§74 Jungle saplings."), 10, adv_2_2, adv_1_3);
+        MultiParent multi = new MultiParent("multi", new AdvancementDisplay(Material.OAK_SAPLING, "§lSaplings", AdvancementFrameType.CHALLENGE, true, true, 3, 2.5f, "§6Description:", "§7Chop trees and get 5 saplings.", "", "§6Rewards:", "§74 Oak saplings.", "§74 Birch saplings.", "§74 Spruce saplings.", "§74 Dark Oak saplings.", "§74 Jungle saplings."), 10, adv_2_2, adv_1_3);
 
         test1Tab.registerAdvancements(root, adv_1_1, adv_1_3, adv_2_2, adv_2_1, multi);
 
@@ -69,11 +69,11 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
 
         RootAdvancement test2Root = new RootAdvancement(test2Tab, "root", new AdvancementDisplay(Material.OAK_SAPLING, "Root", AdvancementFrameType.TASK, false, false, 0, 0), "textures/block/stone.png");
 
-        Test2MultiTask tasks = new Test2MultiTask(test2Tab, "multi_tasks", new AdvancementDisplay(Material.STONE, "§6§lBreak blocks", AdvancementFrameType.GOAL, true, true, 1, 0, "", "Break blocks:", "-> 5 Oak planks", "-> 5 Spruce planks", "-> 5 Dark oak planks"), test2Root, 15);
+        Test2MultiTask tasks = new Test2MultiTask("multi_tasks", new AdvancementDisplay(Material.STONE, "§6§lBreak blocks", AdvancementFrameType.GOAL, true, true, 1, 0, "", "Break blocks:", "-> 5 Oak planks", "-> 5 Spruce planks", "-> 5 Dark oak planks"), test2Root, 15);
 
-        BreakTask oak = new BreakTask(test2Tab, "oak", tasks, 5, Material.OAK_PLANKS);
-        BreakTask spruce = new BreakTask(test2Tab, "spruce", tasks, 5, Material.SPRUCE_PLANKS);
-        BreakTask darkOak = new BreakTask(test2Tab, "dark_oak", tasks, 5, Material.DARK_OAK_PLANKS);
+        BreakTask oak = new BreakTask("oak", tasks, 5, Material.OAK_PLANKS);
+        BreakTask spruce = new BreakTask("spruce", tasks, 5, Material.SPRUCE_PLANKS);
+        BreakTask darkOak = new BreakTask("dark_oak", tasks, 5, Material.DARK_OAK_PLANKS);
 
         tasks.registerTasks(oak, spruce, darkOak);
         test2Tab.registerAdvancements(test2Root, tasks);
