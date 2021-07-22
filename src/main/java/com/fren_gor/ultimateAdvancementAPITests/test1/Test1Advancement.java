@@ -10,12 +10,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class Test1Advancement extends BaseClass {
 
-    public Test1Advancement(@NotNull AdvancementTab advancementTab, @NotNull String key, @NotNull AdvancementDisplay display, @NotNull Advancement parent) {
-        this(advancementTab, key, display, parent, 1);
+    public Test1Advancement(@NotNull String key, @NotNull AdvancementDisplay display, @NotNull Advancement parent) {
+        this(key, display, parent, 1);
     }
 
-    public Test1Advancement(@NotNull AdvancementTab advancementTab, @NotNull String key, @NotNull AdvancementDisplay display, @NotNull Advancement parent, int maxCriteria) {
-        super(advancementTab, key, display, parent, maxCriteria);
+    public Test1Advancement(@NotNull String key, @NotNull AdvancementDisplay display, @NotNull Advancement parent, int maxCriteria) {
+        super(key, display, parent, maxCriteria);
         registerEvent(BlockBreakEvent.class, e -> {
             if (e.getBlock().getType() == display.getIcon().getType()) {
                 incrementTeamCriteria(e.getPlayer());
