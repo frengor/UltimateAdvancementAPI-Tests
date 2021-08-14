@@ -1,7 +1,7 @@
 package com.fren_gor.ultimateAdvancementAPITests.test2;
 
-import com.fren_gor.ultimateAdvancementAPI.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.Advancement;
+import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.tasks.MultiTasksAdvancement;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

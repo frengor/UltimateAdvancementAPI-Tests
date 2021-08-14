@@ -1,8 +1,8 @@
 package com.fren_gor.ultimateAdvancementAPITests.test1;
 
-import com.fren_gor.ultimateAdvancementAPI.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.Advancement;
 import com.fren_gor.ultimateAdvancementAPI.advancement.BaseAdvancement;
+import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.visibilities.HiddenVisibility;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
