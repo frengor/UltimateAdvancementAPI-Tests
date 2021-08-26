@@ -8,11 +8,13 @@ import com.fren_gor.ultimateAdvancementAPI.advancement.Advancement;
 import com.fren_gor.ultimateAdvancementAPI.advancement.RootAdvancement;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
+import com.fren_gor.ultimateAdvancementAPI.advancement.display.FancyAdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.database.CacheFreeingOption;
 import com.fren_gor.ultimateAdvancementAPI.database.DatabaseManager;
 import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
 import com.fren_gor.ultimateAdvancementAPI.events.PlayerLoadingCompletedEvent;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
+import com.fren_gor.ultimateAdvancementAPI.util.Versions;
 import com.fren_gor.ultimateAdvancementAPITests.test1.MultiParent;
 import com.fren_gor.ultimateAdvancementAPITests.test1.Test1Advancement;
 import com.fren_gor.ultimateAdvancementAPITests.test1.Test1Root;
@@ -58,7 +60,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
 
         Test1Advancement adv_1_1 = new Test1Advancement("1_1", new AdvancementDisplay(Material.GRASS_BLOCK, "(1, 1)", AdvancementFrameType.GOAL, true, true, 1, 1), root, 5);
         Test1Advancement adv_1_3 = new Test1Advancement("1_3", new AdvancementDisplay(Material.GRAVEL, "(1, 3)", AdvancementFrameType.TASK, true, false, 1, 3, "Row 1", "Row 2"), root, 5);
-        Test1Advancement adv_2_2 = new Test1Advancement("2_2", new AdvancementDisplay(Material.STICKY_PISTON, "(2, 2)", AdvancementFrameType.TASK, true, true, 2, 2), root, 7);
+        Test1Advancement adv_2_2 = new Test1Advancement("2_2", new FancyAdvancementDisplay(Material.STICKY_PISTON, "(2, 2)", AdvancementFrameType.TASK, true, true, 2, 2, "Boh"), root, 7);
         Test1Advancement adv_2_1 = new Test1Advancement("2_1", new AdvancementDisplay(Material.STICKY_PISTON, "(2, 1)", AdvancementFrameType.TASK, true, true, 2, 1), adv_1_1, 7);
 
         MultiParent multi = new MultiParent("multi", new AdvancementDisplay(Material.OAK_SAPLING, "§lSaplings", AdvancementFrameType.CHALLENGE, true, true, 3, 2.5f, "§6Description:", "§7Chop trees and get 5 saplings.", "", "§6Rewards:", "§74 Oak saplings.", "§74 Birch saplings.", "§74 Spruce saplings.", "§74 Dark Oak saplings.", "§74 Jungle saplings."), 10, adv_2_2, adv_1_3);
@@ -99,6 +101,14 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
             return false;
         }
         switch (args[0]) {
+            case "version": {
+                sender.sendMessage("API version: [" + String.join(", ", Versions.getApiVersion()) + ']');
+                sender.sendMessage("Supported NMS versions: [" + String.join(", ", Versions.getSupportedNMSVersions()) + ']');
+                sender.sendMessage("Supported versions: [" + String.join(", ", Versions.getSupportedVersions()) + ']');
+                sender.sendMessage("NMS versions range: [" + String.join(", ", Versions.getNMSVersionsRange()) + ']');
+                sender.sendMessage("NMS versions list: [" + String.join(", ", Versions.getNMSVersionsList()) + ']');
+                break;
+            }
             case "remove": {
                 try {
                     AdvancementUtils.disableVanillaAdvancements();
