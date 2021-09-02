@@ -13,6 +13,9 @@ import com.fren_gor.ultimateAdvancementAPI.database.CacheFreeingOption;
 import com.fren_gor.ultimateAdvancementAPI.database.DatabaseManager;
 import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
 import com.fren_gor.ultimateAdvancementAPI.events.PlayerLoadingCompletedEvent;
+import com.fren_gor.ultimateAdvancementAPI.events.team.TeamLoadEvent;
+import com.fren_gor.ultimateAdvancementAPI.events.team.TeamUnloadEvent;
+import com.fren_gor.ultimateAdvancementAPI.exceptions.IllegalOperationException;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
 import com.fren_gor.ultimateAdvancementAPI.util.Versions;
 import com.fren_gor.ultimateAdvancementAPITests.test1.MultiParent;
@@ -35,6 +38,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -48,6 +53,8 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
     @Getter
     private AdvancementTab test1Tab, test2Tab;
     private UltimateAdvancementAPI API;
+    private Map<Integer, TeamProgression> progressions = new HashMap<>();
+    private int i;
 
     @Override
     public void onEnable() {
@@ -82,6 +89,26 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
     }
 
     @EventHandler
+    private void onTeamLoad(TeamLoadEvent e) {
+        System.out.println("Loaded team " + i + " with id " + e.getTeam().getTeamId() + '.');
+        progressions.put(i++, e.getTeam());
+    }
+
+    @EventHandler
+    private void onTeamUnload(TeamUnloadEvent e) {
+        int id = -1;
+        for (Entry<Integer, TeamProgression> en : progressions.entrySet()) {
+            if (en.getValue() == e.getTeam()) {
+                id = en.getKey();
+            }
+        }
+        if (id == -1)
+            System.out.println("Unload team (couldn't find test-id) with id " + e.getTeam().getTeamId() + '.');
+        else
+            System.out.println("Unload team " + id + " with id " + e.getTeam().getTeamId() + '.');
+    }
+
+    @EventHandler
     private void onPlayerLoading(PlayerLoadingCompletedEvent e) {
         test1Tab.showTab(e.getPlayer());
         test1Tab.grantRootAdvancement(e.getPlayer());
@@ -100,7 +127,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
             sender.sendMessage("§cIllegal syntax.");
             return false;
         }
-        switch (args[0]) {
+        switch (args[0].toLowerCase(Locale.ROOT)) {
             case "version": {
                 sender.sendMessage("API version: [" + String.join(", ", Versions.getApiVersion()) + ']');
                 sender.sendMessage("Supported NMS versions: [" + String.join(", ", Versions.getSupportedNMSVersions()) + ']');
@@ -193,7 +220,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                         for (Entry<UUID, TeamProgression> e : getProgressionCache(main.getDatabaseManager()).entrySet()) {
                             StringJoiner j = new StringJoiner(", ");
                             e.getValue().forEachMember(u -> j.add(u.toString()));
-                            System.out.println(e.getKey() + " -> " + e.getValue().toString() + '[' + j + ']');
+                            System.out.println(e.getKey() + " -> " + e.getValue().toString() + '[' + j + ']' + (e.getValue().isValid() ? 'L' : 'U'));
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -213,6 +240,11 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                    }
+                    System.out.println("--------------------------");
+                    System.out.println("Every TeamProgression:");
+                    for (Entry<Integer, TeamProgression> e : progressions.entrySet()) {
+                        System.out.println(e.getKey() + " -> " + e.getValue().getTeamId() + ", " + (e.getValue().isValid() ? 'L' : 'U'));
                     }
                     System.out.println("--------------------------");
                 }
@@ -293,6 +325,15 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                         sender.sendMessage("SetUnredeemed: " + r.isSucceeded());
                     }
                 });
+                break;
+            }
+            case "teamprogression": {
+                try {
+                    new TeamProgression(0, UUID.randomUUID());
+                    System.out.println("No exception has been thrown.");
+                } catch (IllegalOperationException e) {
+                    e.printStackTrace();
+                }
                 break;
             }
             default:
