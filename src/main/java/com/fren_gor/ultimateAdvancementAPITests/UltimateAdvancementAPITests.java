@@ -19,6 +19,7 @@ import com.fren_gor.ultimateAdvancementAPI.exceptions.IllegalOperationException;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
 import com.fren_gor.ultimateAdvancementAPI.util.Versions;
 import com.fren_gor.ultimateAdvancementAPITests.test1.MultiParent;
+import com.fren_gor.ultimateAdvancementAPITests.test1.MultiParentVanillaVisibility;
 import com.fren_gor.ultimateAdvancementAPITests.test1.Test1Advancement;
 import com.fren_gor.ultimateAdvancementAPITests.test1.Test1Root;
 import com.fren_gor.ultimateAdvancementAPITests.test2.Test2MultiTask;
@@ -53,7 +54,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
     @Getter
     private AdvancementTab test1Tab, test2Tab;
     private UltimateAdvancementAPI API;
-    private Map<Integer, TeamProgression> progressions = new HashMap<>();
+    private final Map<Integer, TeamProgression> progressions = new HashMap<>();
     private int i;
 
     @Override
@@ -72,7 +73,9 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
 
         MultiParent multi = new MultiParent("multi", new AdvancementDisplay(Material.OAK_SAPLING, "§lSaplings", AdvancementFrameType.CHALLENGE, true, true, 3, 2.5f, "§6Description:", "§7Chop trees and get 5 saplings.", "", "§6Rewards:", "§74 Oak saplings.", "§74 Birch saplings.", "§74 Spruce saplings.", "§74 Dark Oak saplings.", "§74 Jungle saplings."), 10, adv_2_2, adv_1_3);
 
-        test1Tab.registerAdvancements(root, adv_1_1, adv_1_3, adv_2_2, adv_2_1, multi);
+        MultiParentVanillaVisibility multiVanilla = new MultiParentVanillaVisibility("multivanilla", new AdvancementDisplay(Material.ANVIL, "§7Anvils", AdvancementFrameType.CHALLENGE, true, true, 4, 2f), 10, multi, adv_2_1, adv_2_2);
+
+        test1Tab.registerAdvancements(root, adv_1_1, adv_1_3, adv_2_2, adv_2_1, multi, multiVanilla);
 
         test2Tab = API.createAdvancementTab("test2");
 
