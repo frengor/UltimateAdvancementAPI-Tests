@@ -17,7 +17,7 @@ public class Test1Advancement extends BaseClass {
         super(key, display, parent, maxCriteria);
         registerEvent(BlockBreakEvent.class, e -> {
             if (e.getBlock().getType() == display.getIcon().getType()) {
-                incrementTeamCriteria(e.getPlayer());
+                incrementProgression(e.getPlayer());
             }
         });
     }

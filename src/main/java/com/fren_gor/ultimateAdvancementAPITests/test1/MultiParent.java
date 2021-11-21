@@ -14,7 +14,7 @@ public class MultiParent extends MultiParentsAdvancement implements ParentGrante
         super(key, display, maxCriteria, parents);
         registerEvent(BlockBreakEvent.class, e -> {
             if (e.getBlock().getType() == display.getIcon().getType()) {
-                incrementTeamCriteria(e.getPlayer());
+                incrementProgression(e.getPlayer());
             }
         });
     }

@@ -18,7 +18,7 @@ public class BreakTask extends TaskAdvancement {
         Validate.isTrue(block.isBlock(), "Material " + block + " is not a block.");
         registerEvent(BlockBreakEvent.class, e -> {
             if (e.getBlock().getType() == block) {
-                incrementTeamCriteria(e.getPlayer());
+                incrementProgression(e.getPlayer());
             }
         });
     }

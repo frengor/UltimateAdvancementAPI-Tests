@@ -1,7 +1,5 @@
 package com.fren_gor.ultimateAdvancementAPITests;
 
-import com.fren_gor.ultimateAdvancementAPI.AdvancementMain;
-import com.fren_gor.ultimateAdvancementAPI.AdvancementPlugin;
 import com.fren_gor.ultimateAdvancementAPI.AdvancementTab;
 import com.fren_gor.ultimateAdvancementAPI.UltimateAdvancementAPI;
 import com.fren_gor.ultimateAdvancementAPI.advancement.Advancement;
@@ -93,22 +91,22 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
 
     @EventHandler
     private void onTeamLoad(TeamLoadEvent e) {
-        System.out.println("Loaded team " + i + " with id " + e.getTeam().getTeamId() + '.');
-        progressions.put(i++, e.getTeam());
+        System.out.println("Loaded team " + i + " with id " + e.getTeamProgression().getTeamId() + '.');
+        progressions.put(i++, e.getTeamProgression());
     }
 
     @EventHandler
     private void onTeamUnload(TeamUnloadEvent e) {
         int id = -1;
         for (Entry<Integer, TeamProgression> en : progressions.entrySet()) {
-            if (en.getValue() == e.getTeam()) {
+            if (en.getValue() == e.getTeamProgression()) {
                 id = en.getKey();
             }
         }
         if (id == -1)
-            System.out.println("Unload team (couldn't find test-id) with id " + e.getTeam().getTeamId() + '.');
+            System.out.println("Unload team (couldn't find test-id) with id " + e.getTeamProgression().getTeamId() + '.');
         else
-            System.out.println("Unload team " + id + " with id " + e.getTeam().getTeamId() + '.');
+            System.out.println("Unload team " + id + " with id " + e.getTeamProgression().getTeamId() + '.');
     }
 
     @EventHandler
@@ -216,11 +214,11 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                 break;
             }
             case "dump": { // Dump database manager
-                AdvancementMain main = AdvancementPlugin.getInstance().getMain();
-                synchronized (main.getDatabaseManager()) {
+                final DatabaseManager manager = test1Tab.getDatabaseManager();
+                synchronized (manager) {
                     System.out.println("ProgressionCache:");
                     try {
-                        for (Entry<UUID, TeamProgression> e : getProgressionCache(main.getDatabaseManager()).entrySet()) {
+                        for (Entry<UUID, TeamProgression> e : getProgressionCache(manager).entrySet()) {
                             StringJoiner j = new StringJoiner(", ");
                             e.getValue().forEachMember(u -> j.add(u.toString()));
                             System.out.println(e.getKey() + " -> " + e.getValue().toString() + '[' + j + ']' + (e.getValue().isValid() ? 'L' : 'U'));
@@ -231,7 +229,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     System.out.println("--------------------------");
                     System.out.println("TempLoaded:");
                     try {
-                        for (Entry<UUID, Object> e : getTempLoaded(main.getDatabaseManager()).entrySet()) {
+                        for (Entry<UUID, Object> e : getTempLoaded(manager).entrySet()) {
                             System.out.print(e.getKey() + " -> TempUserMetadata:{");
                             System.out.print("\tIsOnline:" + isOnline(e.getValue()));
                             StringJoiner j = new StringJoiner(", ");
