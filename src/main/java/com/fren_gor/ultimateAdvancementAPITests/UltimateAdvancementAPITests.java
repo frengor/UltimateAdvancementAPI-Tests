@@ -3,10 +3,8 @@ package com.fren_gor.ultimateAdvancementAPITests;
 import com.fren_gor.ultimateAdvancementAPI.AdvancementTab;
 import com.fren_gor.ultimateAdvancementAPI.UltimateAdvancementAPI;
 import com.fren_gor.ultimateAdvancementAPI.advancement.Advancement;
-import com.fren_gor.ultimateAdvancementAPI.advancement.RootAdvancement;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
-import com.fren_gor.ultimateAdvancementAPI.advancement.display.FancyAdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.database.CacheFreeingOption;
 import com.fren_gor.ultimateAdvancementAPI.database.DatabaseManager;
 import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
@@ -16,12 +14,13 @@ import com.fren_gor.ultimateAdvancementAPI.events.team.TeamUnloadEvent;
 import com.fren_gor.ultimateAdvancementAPI.exceptions.IllegalOperationException;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
 import com.fren_gor.ultimateAdvancementAPI.util.Versions;
-import com.fren_gor.ultimateAdvancementAPITests.test1.MultiParent;
-import com.fren_gor.ultimateAdvancementAPITests.test1.MultiParentVanillaVisibility;
-import com.fren_gor.ultimateAdvancementAPITests.test1.Test1Advancement;
-import com.fren_gor.ultimateAdvancementAPITests.test1.Test1Root;
-import com.fren_gor.ultimateAdvancementAPITests.test2.Test2MultiTask;
-import com.fren_gor.ultimateAdvancementAPITests.test2.tasks.BreakTask;
+import com.fren_gor.ultimateAdvancementAPITests.copertina.Iron_axe;
+import com.fren_gor.ultimateAdvancementAPITests.copertina.Picc_legn;
+import com.fren_gor.ultimateAdvancementAPITests.copertina.Spada_pie;
+import com.fren_gor.ultimateAdvancementAPITests.copertina.Terra;
+import com.fren_gor.ultimateAdvancementAPITests.copertina.coal;
+import com.fren_gor.ultimateAdvancementAPITests.copertina.fornace;
+import com.fren_gor.ultimateAdvancementAPITests.copertina.lingotto_ferro;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -55,12 +54,38 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
     private final Map<Integer, TeamProgression> progressions = new HashMap<>();
     private int i;
 
+    AdvancementTab copertina;
+
     @Override
     public void onEnable() {
         instance = this;
         API = UltimateAdvancementAPI.getInstance(this);
         Bukkit.getPluginManager().registerEvents(this, this);
-        test1Tab = API.createAdvancementTab("test1");
+
+         copertina = API.createAdvancementTab("copertina");
+
+        Terra terra= new Terra(copertina,"terra", new AdvancementDisplay(Material.GRASS_BLOCK, "rger", AdvancementFrameType.TASK, true, true, 0, 1,"" ),"textures/block/oak_planks.png");
+
+        Picc_legn pic_legn= new Picc_legn("picc_le", new AdvancementDisplay(Material.WOODEN_PICKAXE, "rger", AdvancementFrameType.TASK, true, true, 1, 1,"" ),terra);
+
+        Spada_pie spada_pie= new Spada_pie("spada_pie", new AdvancementDisplay(Material.STONE_SWORD, "rger", AdvancementFrameType.GOAL, true, true, 2, 1,"" ),pic_legn);
+
+        fornace forn= new fornace("forn", new AdvancementDisplay(Material.FURNACE, "rger", AdvancementFrameType.TASK, true, true, 3, 0,"" ),spada_pie);
+
+
+        coal coa= new coal("coa", new AdvancementDisplay(Material.COAL, "rger", AdvancementFrameType.TASK, true, true, 3.5f, 2,"" ),spada_pie);
+
+
+        lingotto_ferro ling= new lingotto_ferro("lingotto", new AdvancementDisplay(Material.IRON_INGOT, "rger", AdvancementFrameType.TASK, true, true, 4, 0,"" ),forn);
+
+        Iron_axe iron_axe= new Iron_axe("ironax, ",new AdvancementDisplay(Material.IRON_AXE, "rger", AdvancementFrameType.CHALLENGE, true, true, 5, 1,"" ),coa,ling);
+
+
+        copertina.registerAdvancements(terra, pic_legn, spada_pie, forn,coa, ling, iron_axe);
+
+
+
+      /*  test1Tab = API.createAdvancementTab("test1");
 
         Test1Root root = new Test1Root(test1Tab, "root", new AdvancementDisplay(Material.NETHER_STAR, "§eTest Root", AdvancementFrameType.TASK, true, true, 0, 2, "Hello!"), "textures/block/stone.png");
 
@@ -86,7 +111,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         BreakTask darkOak = new BreakTask("dark_oak", tasks, 5, Material.DARK_OAK_PLANKS);
 
         tasks.registerTasks(oak, spruce, darkOak);
-        test2Tab.registerAdvancements(test2Root, tasks);
+        test2Tab.registerAdvancements(test2Root, tasks);*/
     }
 
     @EventHandler
@@ -111,12 +136,16 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
 
     @EventHandler
     private void onPlayerLoading(PlayerLoadingCompletedEvent e) {
-        test1Tab.showTab(e.getPlayer());
+       /* test1Tab.showTab(e.getPlayer());
         test1Tab.grantRootAdvancement(e.getPlayer());
         test2Tab.showTab(e.getPlayer());
         test2Tab.grantRootAdvancement(e.getPlayer());
         System.out.println("Called");
         AdvancementUtils.displayToast(e.getPlayer(), new ItemStack(Material.GRASS_BLOCK), "Join", AdvancementFrameType.CHALLENGE);
+   */
+        copertina.showTab(e.getPlayer());
+
+
     }
 
     @Override
