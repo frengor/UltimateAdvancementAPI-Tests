@@ -70,18 +70,21 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
 
         Spada_pie spada_pie= new Spada_pie("spada_pie", new AdvancementDisplay(Material.STONE_SWORD, "rger", AdvancementFrameType.GOAL, true, true, 2, 1,"" ),pic_legn);
 
-        fornace forn= new fornace("forn", new AdvancementDisplay(Material.FURNACE, "rger", AdvancementFrameType.TASK, true, true, 3, 0,"" ),spada_pie);
+        fornace cobb= new fornace("cobb", new AdvancementDisplay(Material.COBBLESTONE, "rger", AdvancementFrameType.TASK, true, true, 3, 0,"" ),spada_pie);
 
 
-        coal coa= new coal("coa", new AdvancementDisplay(Material.COAL, "rger", AdvancementFrameType.TASK, true, true, 3.5f, 2,"" ),spada_pie);
+        fornace forn= new fornace("forn", new AdvancementDisplay(Material.FURNACE, "rger", AdvancementFrameType.TASK, true, true, 4, 0,"" ),cobb);
 
 
-        lingotto_ferro ling= new lingotto_ferro("lingotto", new AdvancementDisplay(Material.IRON_INGOT, "rger", AdvancementFrameType.TASK, true, true, 4, 0,"" ),forn);
-
-        Iron_axe iron_axe= new Iron_axe("ironax, ",new AdvancementDisplay(Material.IRON_AXE, "rger", AdvancementFrameType.CHALLENGE, true, true, 5, 1,"" ),coa,ling);
+        coal coa= new coal("coa", new AdvancementDisplay(Material.COAL, "rger", AdvancementFrameType.TASK, true, true, 3, 2,"" ),spada_pie);
 
 
-        copertina.registerAdvancements(terra, pic_legn, spada_pie, forn,coa, ling, iron_axe);
+        lingotto_ferro ling= new lingotto_ferro("lingotto", new AdvancementDisplay(Material.IRON_INGOT, "rger", AdvancementFrameType.TASK, true, true, 4, 2,"" ),coa);
+
+        Iron_axe iron_axe= new Iron_axe("ironax",new AdvancementDisplay(Material.IRON_AXE, "rger", AdvancementFrameType.CHALLENGE, true, true, 5, 1,"" ),forn,ling);
+
+
+        copertina.registerAdvancements(terra, pic_legn, spada_pie, forn,coa, ling, iron_axe, cobb);
 
 
 
