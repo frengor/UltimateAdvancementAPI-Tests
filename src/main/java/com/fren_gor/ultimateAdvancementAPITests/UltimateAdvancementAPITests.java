@@ -87,6 +87,10 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
 
         tasks.registerTasks(oak, spruce, darkOak);
         test2Tab.registerAdvancements(test2Root, tasks);
+
+        AdvancementTab ungrantable = API.createAdvancementTab("ungrantable");
+        ungrantable.registerAdvancements(new RootAdvancement(ungrantable, "ungrantable", new AdvancementDisplay.Builder(Material.BARRIER, "Ungrantable").build(), "textures/block/stone.png"));
+        ungrantable.automaticallyShowToPlayers().automaticallyGrantRootAdvancement();
     }
 
     @EventHandler
