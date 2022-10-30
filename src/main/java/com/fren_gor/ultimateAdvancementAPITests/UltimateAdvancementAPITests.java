@@ -11,8 +11,8 @@ import com.fren_gor.ultimateAdvancementAPI.database.CacheFreeingOption;
 import com.fren_gor.ultimateAdvancementAPI.database.DatabaseManager;
 import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
 import com.fren_gor.ultimateAdvancementAPI.events.PlayerLoadingCompletedEvent;
-import com.fren_gor.ultimateAdvancementAPI.events.team.TeamLoadEvent;
-import com.fren_gor.ultimateAdvancementAPI.events.team.TeamUnloadEvent;
+import com.fren_gor.ultimateAdvancementAPI.events.team.AsyncTeamLoadEvent;
+import com.fren_gor.ultimateAdvancementAPI.events.team.AsyncTeamUnloadEvent;
 import com.fren_gor.ultimateAdvancementAPI.exceptions.IllegalOperationException;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
 import com.fren_gor.ultimateAdvancementAPI.util.Versions;
@@ -37,6 +37,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
     @Getter
     private AdvancementTab test1Tab, test2Tab;
     private UltimateAdvancementAPI API;
-    private final Map<Integer, TeamProgression> progressions = new HashMap<>();
+    private final Map<Integer, TeamProgression> progressions = Collections.synchronizedMap(new HashMap<>());
     private int i;
 
     @Override
@@ -94,17 +95,19 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
     }
 
     @EventHandler
-    private void onTeamLoad(TeamLoadEvent e) {
+    private void onTeamLoad(AsyncTeamLoadEvent e) {
         System.out.println("Loaded team " + i + " with id " + e.getTeamProgression().getTeamId() + '.');
         progressions.put(i++, e.getTeamProgression());
     }
 
     @EventHandler
-    private void onTeamUnload(TeamUnloadEvent e) {
+    private void onTeamUnload(AsyncTeamUnloadEvent e) {
         int id = -1;
-        for (Entry<Integer, TeamProgression> en : progressions.entrySet()) {
-            if (en.getValue() == e.getTeamProgression()) {
-                id = en.getKey();
+        synchronized (progressions) {
+            for (Entry<Integer, TeamProgression> en : progressions.entrySet()) {
+                if (en.getValue() == e.getTeamProgression()) {
+                    id = en.getKey();
+                }
             }
         }
         if (id == -1)
@@ -150,8 +153,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                 break;
             }
             case "toast": {
-                if (sender instanceof Player) {
-                    Player p = (Player) sender;
+                if (sender instanceof Player p) {
                     new BukkitRunnable() {
                         @Override
                         public void run() {
@@ -178,15 +180,13 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     return false;
                 }
                 UUID uuid = UUID.fromString(args[1]);
-                API.loadOfflinePlayer(uuid, CacheFreeingOption.AUTOMATIC(this, 20 * 20), r -> {
-                    if (r.isExceptionOccurred()) {
-                        r.printStackTrace();
+                API.loadOfflinePlayer(uuid, CacheFreeingOption.AUTOMATIC(this, 20 * 20), null).handle((pro, err) -> {
+                    if (err != null) {
+                        err.printStackTrace();
                     } else {
-                        sender.sendMessage("LoadOfflinePlayer succeeded: " + r.isSucceeded());
-                        sender.sendMessage("LoadOfflinePlayer hasResult: " + r.hasResult());
-                        if (r.getResult() != null)
-                            sender.sendMessage("LoadOfflinePlayer teamId: " + r.getResult().getTeamId());
+                        sender.sendMessage("LoadOfflinePlayer (automatic) teamId: " + pro.getTeamId());
                     }
+                    return null;
                 });
                 break;
             }
@@ -196,15 +196,13 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     return false;
                 }
                 UUID uuid = UUID.fromString(args[1]);
-                API.loadOfflinePlayer(uuid, CacheFreeingOption.MANUAL(this), r -> {
-                    if (r.isExceptionOccurred()) {
-                        r.printStackTrace();
+                API.loadOfflinePlayer(uuid, CacheFreeingOption.MANUAL(this), null).handle((pro, err) -> {
+                    if (err != null) {
+                        err.printStackTrace();
                     } else {
-                        sender.sendMessage("LoadOfflinePlayer succeeded: " + r.isSucceeded());
-                        sender.sendMessage("LoadOfflinePlayer hasResult: " + r.hasResult());
-                        if (r.getResult() != null)
-                            sender.sendMessage("LoadOfflinePlayer teamId: " + r.getResult().getTeamId());
+                        sender.sendMessage("LoadOfflinePlayer (manual) teamId: " + pro.getTeamId());
                     }
+                    return null;
                 });
                 break;
             }
@@ -263,12 +261,13 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                 }
                 UUID uuid1 = UUID.fromString(args[1]);
                 UUID uuid2 = UUID.fromString(args[2]);
-                API.updatePlayerTeam(uuid1, uuid2, r -> {
-                    if (r.isExceptionOccurred()) {
-                        r.printStackTrace();
+                API.updatePlayerTeam(uuid1, uuid2).handle((v, err) -> {
+                    if (err != null) {
+                        err.printStackTrace();
                     } else {
-                        sender.sendMessage("UpdatePlayerTeam: " + r.isSucceeded());
+                        sender.sendMessage("UpdatePlayerTeam!");
                     }
+                    return null;
                 });
                 break;
             }
@@ -278,25 +277,25 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     return false;
                 }
                 UUID uuid = UUID.fromString(args[1]);
-                API.unregisterOfflinePlayer(uuid, r -> {
-                    if (r.isExceptionOccurred()) {
-                        r.printStackTrace();
+                API.unregisterOfflinePlayer(uuid).handle((v, err) -> {
+                    if (err != null) {
+                        err.printStackTrace();
                     } else {
-                        sender.sendMessage("UnregisterPlayer succeeded: " + r.isSucceeded());
+                        sender.sendMessage("UnregisterPlayer succeeded!");
                     }
+                    return null;
                 });
                 break;
             }
             case "apart": {
                 if (sender instanceof Player) {
-                    API.movePlayerInNewTeam((Player) sender, r -> {
-                        if (r.isExceptionOccurred()) {
-                            r.printStackTrace();
+                    API.movePlayerInNewTeam((Player) sender).handle((pro, err) -> {
+                        if (err != null) {
+                            err.printStackTrace();
                         } else {
-                            sender.sendMessage("UnregisterPlayer succeeded: " + r.isSucceeded());
-                            sender.sendMessage("UnregisterPlayer hasResult: " + r.hasResult());
-                            sender.sendMessage("UnregisterPlayer teamId: " + r.getResult().getTeamId());
+                            sender.sendMessage("UnregisterPlayer teamId: " + pro.getTeamId());
                         }
+                        return null;
                     });
                 } else {
                     if (args.length == 1) {
@@ -304,14 +303,13 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                         return false;
                     }
                     UUID uuid = UUID.fromString(args[1]);
-                    API.movePlayerInNewTeam(uuid, r -> {
-                        if (r.isExceptionOccurred()) {
-                            r.printStackTrace();
+                    API.movePlayerInNewTeam(uuid).handle((pro, err) -> {
+                        if (err != null) {
+                            err.printStackTrace();
                         } else {
-                            sender.sendMessage("UnregisterPlayer succeeded: " + r.isSucceeded());
-                            sender.sendMessage("UnregisterPlayer hasResult: " + r.hasResult());
-                            sender.sendMessage("UnregisterPlayer teamId: " + r.getResult().getTeamId());
+                            sender.sendMessage("UnregisterPlayer teamId: " + pro.getTeamId());
                         }
+                        return null;
                     });
                 }
                 break;
@@ -323,12 +321,13 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                 }
                 UUID uuid = UUID.fromString(args[1]);
                 Advancement adv = Objects.requireNonNull(API.getAdvancement(args[2]), "Advancement doesn't exists.");
-                API.setUnredeemed(adv, uuid, r -> {
-                    if (r.isExceptionOccurred()) {
-                        r.printStackTrace();
+                API.setUnredeemed(adv, uuid).handle((v, err) -> {
+                    if (err != null) {
+                        err.printStackTrace();
                     } else {
-                        sender.sendMessage("SetUnredeemed: " + r.isSucceeded());
+                        sender.sendMessage("SetUnredeemed succeeded!");
                     }
+                    return null;
                 });
                 break;
             }
