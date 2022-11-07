@@ -180,27 +180,11 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     return false;
                 }
                 UUID uuid = UUID.fromString(args[1]);
-                API.loadOfflinePlayer(uuid, CacheFreeingOption.AUTOMATIC(this, 20 * 20), null).handle((pro, err) -> {
+                API.loadOfflinePlayer(uuid, CacheFreeingOption.MANUAL, null).handle((pro, err) -> {
                     if (err != null) {
                         err.printStackTrace();
                     } else {
-                        sender.sendMessage("LoadOfflinePlayer (automatic) teamId: " + pro.getTeamId());
-                    }
-                    return null;
-                });
-                break;
-            }
-            case "loadm": { // Load with manual unloading
-                if (args.length == 1) {
-                    sender.sendMessage("§cIllegal syntax.");
-                    return false;
-                }
-                UUID uuid = UUID.fromString(args[1]);
-                API.loadOfflinePlayer(uuid, CacheFreeingOption.MANUAL(this), null).handle((pro, err) -> {
-                    if (err != null) {
-                        err.printStackTrace();
-                    } else {
-                        sender.sendMessage("LoadOfflinePlayer (manual) teamId: " + pro.getTeamId());
+                        sender.sendMessage("LoadOfflinePlayer teamId: " + pro.getTeamId());
                     }
                     return null;
                 });
