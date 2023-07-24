@@ -11,8 +11,11 @@ import com.fren_gor.ultimateAdvancementAPI.database.CacheFreeingOption;
 import com.fren_gor.ultimateAdvancementAPI.database.DatabaseManager;
 import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
 import com.fren_gor.ultimateAdvancementAPI.events.PlayerLoadingCompletedEvent;
+import com.fren_gor.ultimateAdvancementAPI.events.team.AsyncPlayerUnregisteredEvent;
 import com.fren_gor.ultimateAdvancementAPI.events.team.AsyncTeamLoadEvent;
 import com.fren_gor.ultimateAdvancementAPI.events.team.AsyncTeamUnloadEvent;
+import com.fren_gor.ultimateAdvancementAPI.events.team.PlayerRegisteredEvent;
+import com.fren_gor.ultimateAdvancementAPI.events.team.TeamUpdateEvent;
 import com.fren_gor.ultimateAdvancementAPI.exceptions.IllegalOperationException;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
 import com.fren_gor.ultimateAdvancementAPI.util.Versions;
@@ -35,8 +38,10 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -45,6 +50,8 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class UltimateAdvancementAPITests extends JavaPlugin implements Listener {
 
@@ -54,7 +61,8 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
     private AdvancementTab test1Tab, test2Tab;
     private UltimateAdvancementAPI API;
     private final Map<Integer, TeamProgression> progressions = Collections.synchronizedMap(new HashMap<>());
-    private int i;
+    private final AtomicInteger i = new AtomicInteger(0);
+    private final AtomicBoolean advancedDebugOutput = new AtomicBoolean(false);
 
     @Override
     public void onEnable() {
@@ -95,9 +103,53 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
     }
 
     @EventHandler
+    private void onRegister(PlayerRegisteredEvent e) {
+        System.out.println("Player " + e.getPlayerUUID() + " has been registered in team " + e.getTeamProgression().getTeamId() + '.');
+        if (advancedDebugOutput.get()) {
+            StringJoiner j = new StringJoiner(", ", "[", "]");
+            e.getTeamProgression().forEachMember(uuid -> {
+                j.add(uuid.toString());
+            });
+            System.out.println("Team " + e.getTeamProgression().getTeamId() + " members: " + j.toString());
+        }
+    }
+
+    @EventHandler
+    private void onUnregister(AsyncPlayerUnregisteredEvent e) {
+        System.out.println("Player " + e.getPlayerUUID() + " was unregistered.");
+    }
+
+    @EventHandler
+    private void onTeamUpdate(TeamUpdateEvent e) {
+        System.out.println("Player " + e.getPlayerUUID() + " left team " + e.getOldTeamProgression().getTeamId() + '.');
+        if (advancedDebugOutput.get()) {
+            StringJoiner j = new StringJoiner(", ", "[", "]");
+            e.getOldTeamProgression().forEachMember(uuid -> {
+                j.add(uuid.toString());
+            });
+            System.out.println("Team " + e.getOldTeamProgression().getTeamId() + " members: " + j.toString());
+        }
+        System.out.println("Player " + e.getPlayerUUID() + " joined team " + e.getNewTeamProgression().getTeamId() + '.');
+        if (advancedDebugOutput.get()) {
+            StringJoiner j = new StringJoiner(", ", "[", "]");
+            e.getNewTeamProgression().forEachMember(uuid -> {
+                j.add(uuid.toString());
+            });
+            System.out.println("Team " + e.getNewTeamProgression().getTeamId() + " members: " + j.toString());
+        }
+    }
+
+    @EventHandler
     private void onTeamLoad(AsyncTeamLoadEvent e) {
         System.out.println("Loaded team " + i + " with id " + e.getTeamProgression().getTeamId() + '.');
-        progressions.put(i++, e.getTeamProgression());
+        if (advancedDebugOutput.get()) {
+            StringJoiner j = new StringJoiner(", ", "[", "]");
+            e.getTeamProgression().forEachMember(uuid -> {
+                j.add(uuid.toString());
+            });
+            System.out.println("Team " + e.getTeamProgression().getTeamId() + " members: " + j.toString());
+        }
+        progressions.put(i.getAndIncrement(), e.getTeamProgression());
     }
 
     @EventHandler
@@ -114,6 +166,14 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
             System.out.println("Unload team (couldn't find test-id) with id " + e.getTeamProgression().getTeamId() + '.');
         else
             System.out.println("Unload team " + id + " with id " + e.getTeamProgression().getTeamId() + '.');
+
+        if (advancedDebugOutput.get()) {
+            StringJoiner j = new StringJoiner(", ", "[", "]");
+            e.getTeamProgression().forEachMember(uuid -> {
+                j.add(uuid.toString());
+            });
+            System.out.println("Team " + e.getTeamProgression().getTeamId() + " members: " + j.toString());
+        }
     }
 
     @EventHandler
@@ -122,7 +182,16 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         test1Tab.grantRootAdvancement(e.getPlayer());
         test2Tab.showTab(e.getPlayer());
         test2Tab.grantRootAdvancement(e.getPlayer());
-        System.out.println("Called");
+        System.out.println("Called PlayerLoadingCompletedEvent for player " + e.getPlayer().getName() + " (" + e.getPlayer().getUniqueId() + ").");
+
+        if (advancedDebugOutput.get()) {
+            StringJoiner j = new StringJoiner(", ", "[", "]");
+            e.getTeamProgression().forEachMember(uuid -> {
+                j.add(uuid.toString());
+            });
+            System.out.println("Team " + i + " members: " + j.toString());
+        }
+
         AdvancementUtils.displayToast(e.getPlayer(), new ItemStack(Material.GRASS_BLOCK), "Join", AdvancementFrameType.CHALLENGE);
     }
 
@@ -136,23 +205,26 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
             return false;
         }
         switch (args[0].toLowerCase(Locale.ROOT)) {
-            case "version": {
+            case "debug" -> {
+                boolean toSet = !advancedDebugOutput.get();
+                advancedDebugOutput.set(toSet);
+                sender.sendMessage(toSet ? "AdvancedDebugOutput enabled" : "AdvancedDebugOutput disabled");
+            }
+            case "version" -> {
                 sender.sendMessage("API version: [" + String.join(", ", Versions.getApiVersion()) + ']');
                 sender.sendMessage("Supported NMS versions: [" + String.join(", ", Versions.getSupportedNMSVersions()) + ']');
                 sender.sendMessage("Supported versions: [" + String.join(", ", Versions.getSupportedVersions()) + ']');
                 sender.sendMessage("NMS versions range: [" + String.join(", ", Versions.getNMSVersionsRange()) + ']');
                 sender.sendMessage("NMS versions list: [" + String.join(", ", Versions.getNMSVersionsList()) + ']');
-                break;
             }
-            case "remove": {
+            case "remove" -> {
                 try {
                     AdvancementUtils.disableVanillaAdvancements();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                break;
             }
-            case "toast": {
+            case "toast" -> {
                 if (sender instanceof Player p) {
                     new BukkitRunnable() {
                         @Override
@@ -172,9 +244,8 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     }
                     AdvancementUtils.displayToast(p, new ItemStack(Material.GRASS_BLOCK), "Test", AdvancementFrameType.CHALLENGE);
                 }
-                break;
             }
-            case "load": {
+            case "load" -> {
                 if (args.length == 1) {
                     sender.sendMessage("§cIllegal syntax.");
                     return false;
@@ -188,57 +259,50 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     }
                     return null;
                 });
-                break;
             }
-            case "unload": {
+            case "unload" -> {
                 if (args.length == 1) {
                     sender.sendMessage("§cIllegal syntax.");
                     return false;
                 }
                 UUID uuid = UUID.fromString(args[1]);
                 API.unloadOfflinePlayer(uuid);
-                break;
             }
-            case "dump": { // Dump database manager
+            case "dump" -> { // Dump database manager
                 final DatabaseManager manager = test1Tab.getDatabaseManager();
                 synchronized (manager) {
-                    System.out.println("ProgressionCache:");
+                    System.out.println("LoadedTeams:");
                     try {
-                        for (Entry<UUID, TeamProgression> e : getProgressionCache(manager).entrySet()) {
+                        for (Entry<Integer, Object> e : getLoadedTeams(manager).entrySet()) {
                             StringJoiner j = new StringJoiner(", ");
-                            e.getValue().forEachMember(u -> j.add(u.toString()));
-                            System.out.println(e.getKey() + " -> " + e.getValue().toString() + '[' + j + ']' + (e.getValue().isValid() ? 'L' : 'U'));
+                            TeamProgression pro = getTeamProgression(e.getValue());
+                            pro.forEachMember(u -> j.add(u.toString()));
+                            System.out.println(e.getKey() + " -> IR:" + getInternalRequests(e.getValue()) + ", PR:" + getPluginRequests(e.getValue()).size() + " [" + j + "] " + (pro.isValid() ? 'L' : 'U'));
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     System.out.println("--------------------------");
-                    System.out.println("TempLoaded:");
+                    System.out.println("LoadedPlayers:");
                     try {
-                        for (Entry<UUID, Object> e : getTempLoaded(manager).entrySet()) {
-                            System.out.print(e.getKey() + " -> TempUserMetadata:{");
-                            System.out.print("\tIsOnline:" + isOnline(e.getValue()));
-                            StringJoiner j = new StringJoiner(", ");
-                            for (Entry<Plugin, Integer> i : getPluginRequests(e.getValue()).entrySet()) {
-                                j.add(i.getKey().getName() + "=" + i.getValue());
-                            }
-                            System.out.println("\tRequests:[" + j + "]");
-                            System.out.println("}");
+                        for (Entry<UUID, Object> e : getLoadedPlayers(manager).entrySet()) {
+                            Object loadedPlayer = e.getValue();
+                            @Nullable TeamProgression pro = getPlayerTeam(loadedPlayer);
+                            System.out.println(e.getKey() + " -> Team:" + (pro == null ? "null" : pro.getTeamId()) + ", IR:" + getInternalRequests(loadedPlayer) + ", PR:" + getPluginRequests(loadedPlayer).size() + (isOnline(loadedPlayer) ? " online" : " offline"));
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     System.out.println("--------------------------");
-                    System.out.println("Every TeamProgression:");
+                    System.out.println("Test-Stored TeamProgressions:");
                     for (Entry<Integer, TeamProgression> e : progressions.entrySet()) {
-                        System.out.println(e.getKey() + " -> " + e.getValue().getTeamId() + ", " + (e.getValue().isValid() ? 'L' : 'U'));
+                        System.out.println(e.getKey() + " -> Id: " + e.getValue().getTeamId() + ", " + (e.getValue().isValid() ? 'L' : 'U'));
                     }
                     System.out.println("--------------------------");
                 }
 
-                break;
             }
-            case "move": {
+            case "move" -> {
                 if (args.length <= 2) {
                     sender.sendMessage("§cIllegal syntax.");
                     return false;
@@ -253,9 +317,8 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     }
                     return null;
                 });
-                break;
             }
-            case "unregister": {
+            case "unregister" -> {
                 if (args.length == 1) {
                     sender.sendMessage("§cIllegal syntax.");
                     return false;
@@ -269,9 +332,8 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     }
                     return null;
                 });
-                break;
             }
-            case "apart": {
+            case "apart" -> {
                 if (sender instanceof Player) {
                     API.movePlayerInNewTeam((Player) sender).handle((pro, err) -> {
                         if (err != null) {
@@ -296,9 +358,8 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                         return null;
                     });
                 }
-                break;
             }
-            case "unredeemed": {
+            case "unredeemed" -> {
                 if (args.length <= 2) {
                     sender.sendMessage("§cIllegal syntax.");
                     return false;
@@ -313,47 +374,68 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     }
                     return null;
                 });
-                break;
             }
-            case "teamprogression": {
+            case "teamprogression" -> {
                 try {
-                    new TeamProgression(0, UUID.randomUUID());
+                    new TeamProgression(0);
                     System.out.println("No exception has been thrown.");
                 } catch (IllegalOperationException e) {
                     e.printStackTrace();
                 }
-                break;
             }
-            default:
+            default -> {
                 sender.sendMessage("§cIllegal syntax.");
                 return false;
+            }
         }
         return true;
     }
 
-    private static Map<UUID, TeamProgression> getProgressionCache(DatabaseManager manager) throws Exception {
-        Field tempLoaded = DatabaseManager.class.getDeclaredField("progressionCache");
+    private static Map<Integer, Object> getLoadedTeams(DatabaseManager manager) throws Exception {
+        Field tempLoaded = DatabaseManager.class.getDeclaredField("teamsLoaded");
         tempLoaded.setAccessible(true);
 
-        return (Map<UUID, TeamProgression>) tempLoaded.get(manager);
+        return (Map<Integer, Object>) tempLoaded.get(manager);
     }
 
-    private static boolean isOnline(Object temp) throws Exception {
-        Field pR = temp.getClass().getDeclaredField("isOnline");
-        pR.setAccessible(true);
-        return pR.getBoolean(temp);
-    }
-
-    private static Map<Plugin, Integer> getPluginRequests(Object temp) throws Exception {
-        Field pR = temp.getClass().getDeclaredField("pluginRequests");
-        pR.setAccessible(true);
-        return (Map<Plugin, Integer>) pR.get(temp);
-    }
-
-    private static Map<UUID, Object> getTempLoaded(DatabaseManager manager) throws Exception {
-        Field tempLoaded = DatabaseManager.class.getDeclaredField("tempLoaded");
+    private static Map<UUID, Object> getLoadedPlayers(DatabaseManager manager) throws Exception {
+        Field tempLoaded = DatabaseManager.class.getDeclaredField("playersLoaded");
         tempLoaded.setAccessible(true);
 
         return (Map<UUID, Object>) tempLoaded.get(manager);
+    }
+
+    private static boolean isOnline(Object loadedPlayer) throws Exception {
+        Method isOnline = loadedPlayer.getClass().getDeclaredMethod("isOnline");
+        isOnline.setAccessible(true);
+        return (boolean) isOnline.invoke(loadedPlayer);
+    }
+
+    private static int getInternalRequests(Object cacheableEntry) throws Exception {
+        Method getInternalRequests = cacheableEntry.getClass().getSuperclass().getDeclaredMethod("getInternalRequests");
+        getInternalRequests.setAccessible(true);
+        return (int) getInternalRequests.invoke(cacheableEntry);
+    }
+
+    private static Map<Plugin, Integer> getPluginRequests(Object cacheableEntry) throws Exception {
+        Field pR = cacheableEntry.getClass().getSuperclass().getDeclaredField("pluginRequests");
+        pR.setAccessible(true);
+        return (Map<Plugin, Integer>) pR.get(cacheableEntry);
+    }
+
+    private static TeamProgression getTeamProgression(Object loadedTeam) throws Exception {
+        Method getPro = loadedTeam.getClass().getDeclaredMethod("getTeamProgression");
+        getPro.setAccessible(true);
+
+        return (TeamProgression) getPro.invoke(loadedTeam);
+    }
+
+    @Nullable
+    private static TeamProgression getPlayerTeam(Object loadedPlayer) throws Exception {
+        Method playerTeam = loadedPlayer.getClass().getDeclaredMethod("getPlayerTeam");
+        playerTeam.setAccessible(true);
+
+        @Nullable Object loadedTeam = playerTeam.invoke(loadedPlayer);
+        return loadedTeam == null ? null : getTeamProgression(loadedTeam);
     }
 }
