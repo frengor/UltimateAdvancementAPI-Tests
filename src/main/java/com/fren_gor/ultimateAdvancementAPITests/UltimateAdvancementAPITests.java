@@ -7,7 +7,6 @@ import com.fren_gor.ultimateAdvancementAPI.advancement.RootAdvancement;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.FancyAdvancementDisplay;
-import com.fren_gor.ultimateAdvancementAPI.database.CacheFreeingOption;
 import com.fren_gor.ultimateAdvancementAPI.database.DatabaseManager;
 import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
 import com.fren_gor.ultimateAdvancementAPI.events.PlayerLoadingCompletedEvent;
@@ -251,7 +250,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     return false;
                 }
                 UUID uuid = UUID.fromString(args[1]);
-                API.loadOfflinePlayer(uuid, CacheFreeingOption.MANUAL, null).handle((pro, err) -> {
+                API.loadAndAddLoadingRequestToPlayer(uuid).handle((pro, err) -> {
                     if (err != null) {
                         err.printStackTrace();
                     } else {
@@ -266,7 +265,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     return false;
                 }
                 UUID uuid = UUID.fromString(args[1]);
-                API.unloadOfflinePlayer(uuid);
+                API.removeLoadingRequestToPlayer(uuid);
             }
             case "dump" -> { // Dump database manager
                 final DatabaseManager manager = test1Tab.getDatabaseManager();
