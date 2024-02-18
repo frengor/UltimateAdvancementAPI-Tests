@@ -20,6 +20,7 @@ import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
 import com.fren_gor.ultimateAdvancementAPI.util.Versions;
 import com.fren_gor.ultimateAdvancementAPITests.test1.MultiParent;
 import com.fren_gor.ultimateAdvancementAPITests.test1.MultiParentVanillaVisibility;
+import com.fren_gor.ultimateAdvancementAPITests.test1.PerTeamDisplay;
 import com.fren_gor.ultimateAdvancementAPITests.test1.Test1Advancement;
 import com.fren_gor.ultimateAdvancementAPITests.test1.Test1Root;
 import com.fren_gor.ultimateAdvancementAPITests.test2.Test2MultiTask;
@@ -68,11 +69,11 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         instance = this;
         API = UltimateAdvancementAPI.getInstance(this);
         Bukkit.getPluginManager().registerEvents(this, this);
-        test1Tab = API.createAdvancementTab("test1");
+        test1Tab = API.createAdvancementTab("test1", "textures/block/stone.png");
 
-        Test1Root root = new Test1Root(test1Tab, "root", new AdvancementDisplay.Builder(Material.NETHER_STAR, "§eTest Root").showToast().announceChat().taskFrame().description("Hello!").coords(0, 2).build(), "textures/block/stone.png");
+        Test1Root root = new Test1Root(test1Tab, "root", new AdvancementDisplay.Builder(Material.NETHER_STAR, "§eTest Root").showToast().announceChat().taskFrame().description("Hello!").coords(0, 2).build());
 
-        Test1Advancement adv_1_1 = new Test1Advancement("1_1", new AdvancementDisplay.Builder(Material.GRASS_BLOCK, "(1, 1)").goalFrame().showToast().announceChat().coords(1, 1).build(), root, 5);
+        Test1Advancement adv_1_1 = new Test1Advancement("1_1", new PerTeamDisplay(new AdvancementDisplay.Builder(Material.GRASS_BLOCK, "(1, 1)").goalFrame().showToast().announceChat().coords(1, 1).build()), root, 5);
         Test1Advancement adv_1_3 = new Test1Advancement("1_3", new AdvancementDisplay.Builder(Material.GRAVEL, "(1, 3)").taskFrame().showToast().description("Row 1", "Row 2").coords(1, 3).build(), root, 5);
         Test1Advancement adv_2_2 = new Test1Advancement("2_2", new FancyAdvancementDisplay.Builder(Material.STICKY_PISTON, "(2, 2)").coords(2, 2).description("Boh").showToast().announceChat().taskFrame().build(), root, 7);
         Test1Advancement adv_2_1 = new Test1Advancement("2_1", new AdvancementDisplay.Builder(Material.STICKY_PISTON, "(2, 1)").taskFrame().coords(2, 1).showToast().announceChat().build(), adv_1_1, 7);
@@ -83,9 +84,9 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
 
         test1Tab.registerAdvancements(root, adv_1_1, adv_1_3, adv_2_2, adv_2_1, multi, multiVanilla);
 
-        test2Tab = API.createAdvancementTab("test2");
+        test2Tab = API.createAdvancementTab("test2", "textures/block/stone.png");
 
-        RootAdvancement test2Root = new RootAdvancement(test2Tab, "root", new AdvancementDisplay.Builder(Material.OAK_SAPLING, "Root").taskFrame().coords(0, 0).build(), "textures/block/stone.png");
+        RootAdvancement test2Root = new RootAdvancement(test2Tab, "root", new AdvancementDisplay.Builder(Material.OAK_SAPLING, "Root").taskFrame().coords(0, 0).build());
 
         Test2MultiTask tasks = new Test2MultiTask("multi_tasks", new AdvancementDisplay.Builder(Material.STONE, "§6§lBreak blocks").goalFrame().showToast().announceChat().coords(1, 0).description("", "Break blocks:", "-> 5 Oak planks", "-> 5 Spruce planks", "-> 5 Dark oak planks").build(), test2Root, 15);
 
@@ -96,8 +97,8 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         tasks.registerTasks(oak, spruce, darkOak);
         test2Tab.registerAdvancements(test2Root, tasks);
 
-        AdvancementTab ungrantable = API.createAdvancementTab("ungrantable");
-        ungrantable.registerAdvancements(new RootAdvancement(ungrantable, "ungrantable", new AdvancementDisplay.Builder(Material.BARRIER, "Ungrantable").build(), "textures/block/stone.png"));
+        AdvancementTab ungrantable = API.createAdvancementTab("ungrantable", "textures/block/stone.png");
+        ungrantable.registerAdvancements(new RootAdvancement(ungrantable, "ungrantable", new AdvancementDisplay.Builder(Material.BARRIER, "Ungrantable").build()));
         ungrantable.automaticallyShowToPlayers().automaticallyGrantRootAdvancement();
     }
 

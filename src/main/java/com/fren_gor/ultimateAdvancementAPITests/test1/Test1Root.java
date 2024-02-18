@@ -10,12 +10,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class Test1Root extends RootAdvancement {
 
-    public Test1Root(@NotNull AdvancementTab advancementTab, @NotNull String key, @NotNull AdvancementDisplay display, @NotNull String backgroundTexture) {
-        super(advancementTab, key, display, backgroundTexture);
+    public Test1Root(@NotNull AdvancementTab advancementTab, @NotNull String key, @NotNull AdvancementDisplay display) {
+        super(advancementTab, key, display);
     }
 
-    public Test1Root(@NotNull AdvancementTab advancementTab, @NotNull String key, @NotNull AdvancementDisplay display, @NotNull String backgroundTexture, int maxCriteria) {
-        super(advancementTab, key, display, backgroundTexture, maxCriteria);
+    public Test1Root(@NotNull AdvancementTab advancementTab, @NotNull String key, @NotNull AdvancementDisplay display, int maxCriteria) {
+        super(advancementTab, key, display, maxCriteria);
     }
 
     @Override
