@@ -5,6 +5,7 @@ import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDispla
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
 import com.fren_gor.ultimateAdvancementAPI.nms.wrappers.advancement.PreparedAdvancementDisplayWrapper;
 import net.md_5.bungee.api.chat.BaseComponent;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -21,42 +22,42 @@ public class PerPlayerDisplay extends AbstractPerPlayerAdvancementDisplay {
     }
 
     @Override
-    public boolean doesShowToast(@NotNull Player player) {
+    public boolean doesShowToast(@NotNull OfflinePlayer player) {
         return baseDisplay.doesShowToast();
     }
 
     @Override
-    public boolean doesAnnounceToChat(@NotNull Player player) {
+    public boolean doesAnnounceToChat(@NotNull OfflinePlayer player) {
         return baseDisplay.doesAnnounceToChat();
     }
 
     @Override
-    public @NotNull ItemStack getIcon(@NotNull Player player) {
+    public @NotNull ItemStack getIcon(@NotNull OfflinePlayer player) {
         return baseDisplay.getIcon();
     }
 
     @Override
-    public @NotNull BaseComponent[] getTitleBaseComponent(@NotNull Player player) {
+    public @NotNull BaseComponent[] getTitleBaseComponent(@NotNull OfflinePlayer player) {
         return baseDisplay.getTitleBaseComponent();
     }
 
     @Override
-    public @Unmodifiable List<BaseComponent[]> getDescriptionBaseComponent(@NotNull Player player) {
+    public @Unmodifiable List<BaseComponent[]> getDescriptionBaseComponent(@NotNull OfflinePlayer player) {
         return baseDisplay.getDescriptionBaseComponent();
     }
 
     @Override
-    public @NotNull AdvancementFrameType getFrame(@NotNull Player player) {
+    public @NotNull AdvancementFrameType getFrame(@NotNull OfflinePlayer player) {
         return baseDisplay.getFrame();
     }
 
     @Override
-    public float getX(@NotNull Player player) {
+    public float getX(@NotNull OfflinePlayer player) {
         return baseDisplay.getX();
     }
 
     @Override
-    public float getY(@NotNull Player player) {
+    public float getY(@NotNull OfflinePlayer player) {
         return baseDisplay.getY();
     }
 
