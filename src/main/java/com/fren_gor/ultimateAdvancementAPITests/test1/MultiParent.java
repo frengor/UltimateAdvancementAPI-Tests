@@ -21,6 +21,6 @@ public class MultiParent extends MultiParentsAdvancement implements ParentGrante
 
     @Override
     public void giveReward(@NotNull Player player) {
-        player.getInventory().addItem(new ItemStack(display.getIcon()));
+        player.getInventory().addItem(new ItemStack(display.dispatchGetIcon(player, advancementTab)));
     }
 }

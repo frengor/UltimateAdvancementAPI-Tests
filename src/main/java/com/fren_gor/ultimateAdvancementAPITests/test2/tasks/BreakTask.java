@@ -25,6 +25,6 @@ public class BreakTask extends TaskAdvancement {
 
     @Override
     public void giveReward(@NotNull Player player) {
-        player.sendMessage("Done task " + display.getTitle());
+        player.sendMessage("Done task " + display.dispatchGetTitle(player, advancementTab));
     }
 }

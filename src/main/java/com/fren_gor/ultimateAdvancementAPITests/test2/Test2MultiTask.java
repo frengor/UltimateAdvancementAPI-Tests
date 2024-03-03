@@ -16,6 +16,6 @@ public class Test2MultiTask extends MultiTasksAdvancement {
     @Override
     public void giveReward(@NotNull Player player) {
         player.sendMessage("Tasks done");
-        player.getInventory().addItem(display.getIcon());
+        player.getInventory().addItem(display.dispatchGetIcon(player, advancementTab));
     }
 }

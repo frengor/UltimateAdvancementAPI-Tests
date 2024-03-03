@@ -17,7 +17,7 @@ public class Test1Advancement extends BaseClass {
     public Test1Advancement(@NotNull String key, @NotNull AbstractAdvancementDisplay display, @NotNull Advancement parent, int maxCriteria) {
         super(key, display, parent, maxCriteria);
         registerEvent(BlockBreakEvent.class, e -> {
-            if (e.getBlock().getType() == display.getIcon().getType()) {
+            if (e.getBlock().getType() == display.dispatchGetIcon(e.getPlayer(), advancementTab).getType()) {
                 incrementProgression(e.getPlayer());
             }
         });
@@ -25,7 +25,7 @@ public class Test1Advancement extends BaseClass {
 
     @Override
     public void giveReward(@NotNull Player player) {
-        player.getInventory().addItem(new ItemStack(display.getIcon()));
+        player.getInventory().addItem(new ItemStack(display.dispatchGetIcon(player, advancementTab)));
     }
 
 }
