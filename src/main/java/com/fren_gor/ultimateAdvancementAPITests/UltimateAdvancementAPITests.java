@@ -15,6 +15,7 @@ import com.fren_gor.ultimateAdvancementAPI.events.team.AsyncTeamLoadEvent;
 import com.fren_gor.ultimateAdvancementAPI.events.team.AsyncTeamUnloadEvent;
 import com.fren_gor.ultimateAdvancementAPI.events.team.PlayerRegisteredEvent;
 import com.fren_gor.ultimateAdvancementAPI.events.team.TeamUpdateEvent;
+import com.fren_gor.ultimateAdvancementAPI.exceptions.DuplicatedException;
 import com.fren_gor.ultimateAdvancementAPI.exceptions.IllegalOperationException;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
 import com.fren_gor.ultimateAdvancementAPI.util.Versions;
@@ -102,6 +103,44 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         AdvancementTab ungrantable = API.createAdvancementTab("ungrantable", "textures/block/stone.png");
         ungrantable.registerAdvancements(new RootAdvancement(ungrantable, "ungrantable", new AdvancementDisplay.Builder(Material.BARRIER, "Ungrantable").build()));
         ungrantable.automaticallyShowToPlayers().automaticallyGrantRootAdvancement();
+    }
+
+    private void registerBackgroundTabs() {
+        var staticBgImm = API.createAdvancementTab("static-imm", "textures/block/stone.png");
+        var staticBgTeam = API.createAdvancementTab("static-team", "textures/block/stone.png");
+        var staticBgPlayer = API.createAdvancementTab("static-player", "textures/block/stone.png");
+
+        var perTeamBgImm = API.createAdvancementTab("per-team-imm", (TeamProgression p) -> "textures/block/bedrock.png");
+        var perTeamBgTeam = API.createAdvancementTab("per-team-team", (TeamProgression p) -> "textures/block/bedrock.png");
+        var perTeamBgPlayer = API.createAdvancementTab("per-team-player", (TeamProgression p) -> "textures/block/bedrock.png");
+
+        var perPlayerBgImm = API.createAdvancementTab("per-player-imm", (Player p) -> "textures/block/beacon.png");
+        var perPlayerBgTeam = API.createAdvancementTab("per-player-team", (Player p) -> "textures/block/beacon.png");
+        var perPlayerBgPlayer = API.createAdvancementTab("per-player-player", (Player p) -> "textures/block/beacon.png");
+
+        staticBgImm.registerAdvancements(new RootAdvancement(staticBgImm, "root", new AdvancementDisplay.Builder(Material.STONE, "Static").description("Static bg, display Immutable").build()));
+        staticBgTeam.registerAdvancements(new RootAdvancement(staticBgTeam, "root", new PerTeamDisplay(new AdvancementDisplay.Builder(Material.STONE, "Static").description("Static bg, display PerTeam").build())));
+        staticBgPlayer.registerAdvancements(new RootAdvancement(staticBgPlayer, "root", new PerPlayerDisplay(new AdvancementDisplay.Builder(Material.STONE, "Static").description("Static bg, display PerPlayer").build())));
+
+        perTeamBgImm.registerAdvancements(new RootAdvancement(perTeamBgImm, "root", new AdvancementDisplay.Builder(Material.BEDROCK, "PerTeam").description("PerTeam bg, display Immutable").build()));
+        perTeamBgTeam.registerAdvancements(new RootAdvancement(perTeamBgTeam, "root", new PerTeamDisplay(new AdvancementDisplay.Builder(Material.BEDROCK, "PerTeam").description("PerTeam bg, display PerTeam").build())));
+        perTeamBgPlayer.registerAdvancements(new RootAdvancement(perTeamBgPlayer, "root", new PerPlayerDisplay(new AdvancementDisplay.Builder(Material.BEDROCK, "PerTeam").description("PerTeam bg, display PerPlayer").build())));
+
+        perPlayerBgImm.registerAdvancements(new RootAdvancement(perPlayerBgImm, "root", new AdvancementDisplay.Builder(Material.BEACON, "PerPlayer").description("PerPlayer bg, display Immutable").build()));
+        perPlayerBgTeam.registerAdvancements(new RootAdvancement(perPlayerBgTeam, "root", new PerTeamDisplay(new AdvancementDisplay.Builder(Material.BEACON, "PerPlayer").description("PerPlayer bg, display PerTeam").build())));
+        perPlayerBgPlayer.registerAdvancements(new RootAdvancement(perPlayerBgPlayer, "root", new PerPlayerDisplay(new AdvancementDisplay.Builder(Material.BEACON, "PerPlayer").description("PerPlayer bg, display PerPlayer").build())));
+
+        staticBgImm.automaticallyShowToPlayers();
+        staticBgTeam.automaticallyShowToPlayers();
+        staticBgPlayer.automaticallyShowToPlayers();
+
+        perTeamBgImm.automaticallyShowToPlayers();
+        perTeamBgTeam.automaticallyShowToPlayers();
+        perTeamBgPlayer.automaticallyShowToPlayers();
+
+        perPlayerBgImm.automaticallyShowToPlayers();
+        perPlayerBgTeam.automaticallyShowToPlayers();
+        perPlayerBgPlayer.automaticallyShowToPlayers();
     }
 
     @EventHandler
@@ -211,6 +250,14 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                 boolean toSet = !advancedDebugOutput.get();
                 advancedDebugOutput.set(toSet);
                 sender.sendMessage(toSet ? "AdvancedDebugOutput enabled" : "AdvancedDebugOutput disabled");
+            }
+            case "background" -> {
+                try {
+                    registerBackgroundTabs();
+                    sender.sendMessage("Registered background tabs.");
+                } catch (DuplicatedException e) {
+                    sender.sendMessage("Background tabs already enabled.");
+                }
             }
             case "version" -> {
                 sender.sendMessage("API version: [" + String.join(", ", Versions.getApiVersion()) + ']');
