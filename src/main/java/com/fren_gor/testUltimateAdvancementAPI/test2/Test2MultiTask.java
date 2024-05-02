@@ -1,4 +1,4 @@
-package com.fren_gor.ultimateAdvancementAPITests.test2;
+package com.fren_gor.testUltimateAdvancementAPI.test2;
 
 import com.fren_gor.ultimateAdvancementAPI.advancement.Advancement;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
