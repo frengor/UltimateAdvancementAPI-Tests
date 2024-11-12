@@ -11,6 +11,7 @@ import com.fren_gor.ultimateAdvancementAPI.database.CacheFreeingOption;
 import com.fren_gor.ultimateAdvancementAPI.database.DatabaseManager;
 import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
 import com.fren_gor.ultimateAdvancementAPI.events.PlayerLoadingCompletedEvent;
+import com.fren_gor.ultimateAdvancementAPI.events.PlayerLoadingFailedEvent;
 import com.fren_gor.ultimateAdvancementAPI.events.team.TeamLoadEvent;
 import com.fren_gor.ultimateAdvancementAPI.events.team.TeamUnloadEvent;
 import com.fren_gor.ultimateAdvancementAPI.exceptions.IllegalOperationException;
@@ -23,6 +24,7 @@ import com.fren_gor.ultimateAdvancementAPITests.test1.Test1Root;
 import com.fren_gor.ultimateAdvancementAPITests.test2.Test2MultiTask;
 import com.fren_gor.ultimateAdvancementAPITests.test2.tasks.BreakTask;
 import lombok.Getter;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -36,6 +38,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.Color;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Locale;
@@ -64,7 +67,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
 
         Test1Root root = new Test1Root(test1Tab, "root", new AdvancementDisplay.Builder(Material.NETHER_STAR, "§eTest Root").showToast().announceChat().taskFrame().description("Hello!").coords(0, 2).build(), "textures/block/stone.png");
 
-        Test1Advancement adv_1_1 = new Test1Advancement("1_1", new AdvancementDisplay.Builder(Material.GRASS_BLOCK, "(1, 1)").goalFrame().showToast().announceChat().coords(1, 1).build(), root, 5);
+        Test1Advancement adv_1_1 = new Test1Advancement("1_1", new AdvancementDisplay.Builder(Material.GRASS_BLOCK, ChatColor.of(new Color(37, 219, 71)) + "(1, 1)").goalFrame().showToast().announceChat().coords(1, 1).build(), root, 5);
         Test1Advancement adv_1_3 = new Test1Advancement("1_3", new AdvancementDisplay.Builder(Material.GRAVEL, "(1, 3)").taskFrame().showToast().description("Row 1", "Row 2").coords(1, 3).build(), root, 5);
         Test1Advancement adv_2_2 = new Test1Advancement("2_2", new FancyAdvancementDisplay.Builder(Material.STICKY_PISTON, "(2, 2)").coords(2, 2).description("Boh").showToast().announceChat().taskFrame().build(), root, 7);
         Test1Advancement adv_2_1 = new Test1Advancement("2_1", new AdvancementDisplay.Builder(Material.STICKY_PISTON, "(2, 1)").taskFrame().coords(2, 1).showToast().announceChat().build(), adv_1_1, 7);
@@ -111,6 +114,11 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
             System.out.println("Unload team (couldn't find test-id) with id " + e.getTeamProgression().getTeamId() + '.');
         else
             System.out.println("Unload team " + id + " with id " + e.getTeamProgression().getTeamId() + '.');
+    }
+
+    @EventHandler
+    private void onFail(PlayerLoadingFailedEvent e) {
+        System.out.println("Failed to load :" + e.getPlayer().getName());
     }
 
     @EventHandler
@@ -220,6 +228,16 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
             case "dump": { // Dump database manager
                 final DatabaseManager manager = test1Tab.getDatabaseManager();
                 synchronized (manager) {
+                    try {
+                        Field f = manager.getClass().getDeclaredField("waitingForJoinEvent");
+                        f.setAccessible(true);
+                        Map<?, ?> m = (Map<?, ?>) f.get(manager);
+                        System.out.println("Size of waitingForJoinEvent is: " + m.size());
+                        System.out.println();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                     System.out.println("ProgressionCache:");
                     try {
                         for (Entry<UUID, TeamProgression> e : getProgressionCache(manager).entrySet()) {
