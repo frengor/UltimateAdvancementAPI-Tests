@@ -4,9 +4,8 @@ import com.fren_gor.ultimateAdvancementAPI.AdvancementTab;
 import com.fren_gor.ultimateAdvancementAPI.UltimateAdvancementAPI;
 import com.fren_gor.ultimateAdvancementAPI.advancement.Advancement;
 import com.fren_gor.ultimateAdvancementAPI.advancement.RootAdvancement;
-import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
+import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplayBuilder;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
-import com.fren_gor.ultimateAdvancementAPI.advancement.display.FancyAdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.database.DatabaseManager;
 import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
 import com.fren_gor.ultimateAdvancementAPI.events.PlayerLoadingCompletedEvent;
@@ -29,6 +28,7 @@ import com.fren_gor.ultimateAdvancementAPITests.test1.Test1Root;
 import com.fren_gor.ultimateAdvancementAPITests.test2.Test2MultiTask;
 import com.fren_gor.ultimateAdvancementAPITests.test2.tasks.BreakTask;
 import lombok.Getter;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -43,6 +43,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -74,24 +75,24 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         Bukkit.getPluginManager().registerEvents(this, this);
         test1Tab = API.createAdvancementTab("test1", "textures/block/stone.png");
 
-        Test1Root root = new Test1Root(test1Tab, "root", new AdvancementDisplay.Builder(Material.NETHER_STAR, "§eTest Root").showToast().announceChat().taskFrame().description("Hello!").coords(0, 2).build());
+        Test1Root root = new Test1Root(test1Tab, "root", new AdvancementDisplayBuilder(Material.NETHER_STAR, "§eTest Root").showToast().announceChat().taskFrame().description("Hello!").coords(0, 2).build());
 
-        Test1Advancement adv_1_1 = new Test1Advancement("1_1", new PerTeamDisplay(new AdvancementDisplay.Builder(Material.GRASS_BLOCK, "(1, 1)").goalFrame().showToast().announceChat().coords(1, 1).build()), root, 5);
-        Test1Advancement adv_1_3 = new Test1Advancement("1_3", new PerPlayerDisplay(new AdvancementDisplay.Builder(Material.GRAVEL, "(1, 3)").taskFrame().showToast().description("Row 1", "Row 2").coords(1, 3).build()), root, 5);
-        Test1Advancement adv_2_2 = new Test1Advancement("2_2", new FancyAdvancementDisplay.Builder(Material.STICKY_PISTON, "(2, 2)").coords(2, 2).description("Boh").showToast().announceChat().taskFrame().build(), root, 7);
-        Test1AdvancementCustomAM adv_2_1 = new Test1AdvancementCustomAM("2_1", new AdvancementDisplay.Builder(Material.STICKY_PISTON, "(2, 1)").taskFrame().coords(2, 1).showToast().announceChat().build(), adv_1_1, 7);
+        Test1Advancement adv_1_1 = new Test1Advancement("1_1", new PerTeamDisplay(new AdvancementDisplayBuilder(Material.GRASS_BLOCK, "(1, 1)").goalFrame().showToast().announceChat().coords(1, 1).build()), root, 5);
+        Test1Advancement adv_1_3 = new Test1Advancement("1_3", new PerPlayerDisplay(new AdvancementDisplayBuilder(Material.GRAVEL, "(1, 3)").taskFrame().showToast().description("Row 1", "Row 2").coords(1, 3).build()), root, 5);
+        Test1Advancement adv_2_2 = new Test1Advancement("2_2", new AdvancementDisplayBuilder(Material.STICKY_PISTON, "(2, 2)").coords(2, 2).description("Boh").showToast().announceChat().taskFrame().build(), root, 7);
+        Test1AdvancementCustomAM adv_2_1 = new Test1AdvancementCustomAM("2_1", new AdvancementDisplayBuilder(Material.STICKY_PISTON, "(2, 1)").taskFrame().coords(2, 1).showToast().announceChat().build(), adv_1_1, 7);
 
-        MultiParent multi = new MultiParent("multi", new AdvancementDisplay.Builder(Material.OAK_SAPLING, "§lSaplings").challengeFrame().showToast().announceChat().coords(3, 2.5f).description("§6Description:", "§7Chop trees and get 5 saplings.", "", "§6Rewards:", "§74 Oak saplings.", "§74 Birch saplings.", "§74 Spruce saplings.", "§74 Dark Oak saplings.", "§74 Jungle saplings.").build(), 10, adv_2_2, adv_1_3);
+        MultiParent multi = new MultiParent("multi", new AdvancementDisplayBuilder(Material.OAK_SAPLING, "§lSaplings").challengeFrame().showToast().announceChat().coords(3, 2.5f).description("§6Description:", "§7Chop trees and get 5 saplings.", "", "§6Rewards:", "§74 Oak saplings.", "§74 Birch saplings.", "§74 Spruce saplings.", "§74 Dark Oak saplings.", "§74 Jungle saplings.").build(), 10, adv_2_2, adv_1_3);
 
-        MultiParentVanillaVisibility multiVanilla = new MultiParentVanillaVisibility("multivanilla", new AdvancementDisplay.Builder(Material.ANVIL, "§7Anvils").challengeFrame().showToast().announceChat().coords(4, 2f).build(), 10, multi, adv_2_1, adv_2_2);
+        MultiParentVanillaVisibility multiVanilla = new MultiParentVanillaVisibility("multivanilla", new AdvancementDisplayBuilder(Material.ANVIL, "§7Anvils").challengeFrame().showToast().announceChat().coords(4, 2f).build(), 10, multi, adv_2_1, adv_2_2);
 
         test1Tab.registerAdvancements(root, adv_1_1, adv_1_3, adv_2_2, adv_2_1, multi, multiVanilla);
 
         test2Tab = API.createAdvancementTab("test2", "textures/block/stone.png");
 
-        RootAdvancement test2Root = new RootAdvancement(test2Tab, "root", new AdvancementDisplay.Builder(Material.OAK_SAPLING, "Root").taskFrame().coords(0, 0).build());
+        RootAdvancement test2Root = new RootAdvancement(test2Tab, "root", new AdvancementDisplayBuilder(Material.OAK_SAPLING, ChatColor.of(new Color(37, 219, 71)) + "Root").taskFrame().coords(0, 0).build());
 
-        Test2MultiTask tasks = new Test2MultiTask("multi_tasks", new AdvancementDisplay.Builder(Material.STONE, "§6§lBreak blocks").goalFrame().showToast().announceChat().coords(1, 0).description("", "Break blocks:", "-> 5 Oak planks", "-> 5 Spruce planks", "-> 5 Dark oak planks").build(), test2Root, 15);
+        Test2MultiTask tasks = new Test2MultiTask("multi_tasks", new AdvancementDisplayBuilder(Material.STONE, "§6§lBreak blocks").goalFrame().showToast().announceChat().coords(1, 0).description("Break blocks:", "-> 5 Oak planks", "-> 5 Spruce planks", "-> 5 Dark oak planks").build(), test2Root, 15);
 
         BreakTask oak = new BreakTask("oak", tasks, 5, Material.OAK_PLANKS);
         BreakTask spruce = new BreakTask("spruce", tasks, 5, Material.SPRUCE_PLANKS);
@@ -101,7 +102,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         test2Tab.registerAdvancements(test2Root, tasks);
 
         AdvancementTab ungrantable = API.createAdvancementTab("ungrantable", "textures/block/stone.png");
-        ungrantable.registerAdvancements(new RootAdvancement(ungrantable, "ungrantable", new AdvancementDisplay.Builder(Material.BARRIER, "Ungrantable").build()));
+        ungrantable.registerAdvancements(new RootAdvancement(ungrantable, "ungrantable", new AdvancementDisplayBuilder(Material.BARRIER, "Ungrantable").build()));
         ungrantable.automaticallyShowToPlayers().automaticallyGrantRootAdvancement();
     }
 
@@ -118,17 +119,17 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         var perPlayerBgTeam = API.createAdvancementTab("per-player-team", (Player p) -> "textures/block/beacon.png");
         var perPlayerBgPlayer = API.createAdvancementTab("per-player-player", (Player p) -> "textures/block/beacon.png");
 
-        staticBgImm.registerAdvancements(new RootAdvancement(staticBgImm, "root", new AdvancementDisplay.Builder(Material.STONE, "Static").description("Static bg, display Immutable").build()));
-        staticBgTeam.registerAdvancements(new RootAdvancement(staticBgTeam, "root", new PerTeamDisplay(new AdvancementDisplay.Builder(Material.STONE, "Static").description("Static bg, display PerTeam").build())));
-        staticBgPlayer.registerAdvancements(new RootAdvancement(staticBgPlayer, "root", new PerPlayerDisplay(new AdvancementDisplay.Builder(Material.STONE, "Static").description("Static bg, display PerPlayer").build())));
+        staticBgImm.registerAdvancements(new RootAdvancement(staticBgImm, "root", new AdvancementDisplayBuilder(Material.STONE, "Static").description("Static bg, display Immutable").build()));
+        staticBgTeam.registerAdvancements(new RootAdvancement(staticBgTeam, "root", new PerTeamDisplay(new AdvancementDisplayBuilder(Material.STONE, "Static").description("Static bg, display PerTeam").build())));
+        staticBgPlayer.registerAdvancements(new RootAdvancement(staticBgPlayer, "root", new PerPlayerDisplay(new AdvancementDisplayBuilder(Material.STONE, "Static").description("Static bg, display PerPlayer").build())));
 
-        perTeamBgImm.registerAdvancements(new RootAdvancement(perTeamBgImm, "root", new AdvancementDisplay.Builder(Material.BEDROCK, "PerTeam").description("PerTeam bg, display Immutable").build()));
-        perTeamBgTeam.registerAdvancements(new RootAdvancement(perTeamBgTeam, "root", new PerTeamDisplay(new AdvancementDisplay.Builder(Material.BEDROCK, "PerTeam").description("PerTeam bg, display PerTeam").build())));
-        perTeamBgPlayer.registerAdvancements(new RootAdvancement(perTeamBgPlayer, "root", new PerPlayerDisplay(new AdvancementDisplay.Builder(Material.BEDROCK, "PerTeam").description("PerTeam bg, display PerPlayer").build())));
+        perTeamBgImm.registerAdvancements(new RootAdvancement(perTeamBgImm, "root", new AdvancementDisplayBuilder(Material.BEDROCK, "PerTeam").description("PerTeam bg, display Immutable").build()));
+        perTeamBgTeam.registerAdvancements(new RootAdvancement(perTeamBgTeam, "root", new PerTeamDisplay(new AdvancementDisplayBuilder(Material.BEDROCK, "PerTeam").description("PerTeam bg, display PerTeam").build())));
+        perTeamBgPlayer.registerAdvancements(new RootAdvancement(perTeamBgPlayer, "root", new PerPlayerDisplay(new AdvancementDisplayBuilder(Material.BEDROCK, "PerTeam").description("PerTeam bg, display PerPlayer").build())));
 
-        perPlayerBgImm.registerAdvancements(new RootAdvancement(perPlayerBgImm, "root", new AdvancementDisplay.Builder(Material.BEACON, "PerPlayer").description("PerPlayer bg, display Immutable").build()));
-        perPlayerBgTeam.registerAdvancements(new RootAdvancement(perPlayerBgTeam, "root", new PerTeamDisplay(new AdvancementDisplay.Builder(Material.BEACON, "PerPlayer").description("PerPlayer bg, display PerTeam").build())));
-        perPlayerBgPlayer.registerAdvancements(new RootAdvancement(perPlayerBgPlayer, "root", new PerPlayerDisplay(new AdvancementDisplay.Builder(Material.BEACON, "PerPlayer").description("PerPlayer bg, display PerPlayer").build())));
+        perPlayerBgImm.registerAdvancements(new RootAdvancement(perPlayerBgImm, "root", new AdvancementDisplayBuilder(Material.BEACON, "PerPlayer").description("PerPlayer bg, display Immutable").build()));
+        perPlayerBgTeam.registerAdvancements(new RootAdvancement(perPlayerBgTeam, "root", new PerTeamDisplay(new AdvancementDisplayBuilder(Material.BEACON, "PerPlayer").description("PerPlayer bg, display PerTeam").build())));
+        perPlayerBgPlayer.registerAdvancements(new RootAdvancement(perPlayerBgPlayer, "root", new PerPlayerDisplay(new AdvancementDisplayBuilder(Material.BEACON, "PerPlayer").description("PerPlayer bg, display PerPlayer").build())));
 
         staticBgImm.automaticallyShowToPlayers();
         staticBgTeam.automaticallyShowToPlayers();

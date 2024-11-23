@@ -4,7 +4,7 @@ import com.fren_gor.ultimateAdvancementAPI.advancement.display.AbstractPerTeamAd
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
 import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
-import com.fren_gor.ultimateAdvancementAPI.nms.wrappers.advancement.PreparedAdvancementDisplayWrapper;
+import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.inventory.ItemStack;
@@ -36,15 +36,15 @@ public class PerTeamDisplay extends AbstractPerTeamAdvancementDisplay {
     }
 
     @Override
-    public @NotNull BaseComponent[] getTitleBaseComponent(@NotNull TeamProgression progression) {
-        return new ComponentBuilder("Your team id is ")
+    public @NotNull BaseComponent getTitle(@NotNull TeamProgression progression) {
+        return AdvancementUtils.build(new ComponentBuilder("Your team id is ")
                 .append(String.valueOf(progression.getTeamId()))
-                .create();
+        );
     }
 
     @Override
-    public @NotNull List<BaseComponent[]> getDescriptionBaseComponent(@NotNull TeamProgression progression) {
-        return baseDisplay.getDescriptionBaseComponent();
+    public @NotNull List<BaseComponent> getDescription(@NotNull TeamProgression progression) {
+        return baseDisplay.getDescription();
     }
 
     @Override
@@ -60,15 +60,5 @@ public class PerTeamDisplay extends AbstractPerTeamAdvancementDisplay {
     @Override
     public float getY(@NotNull TeamProgression progression) {
         return baseDisplay.getY();
-    }
-
-    @Override
-    @NotNull
-    public PreparedAdvancementDisplayWrapper getNMSWrapper(@NotNull TeamProgression team) {
-        try {
-            return PreparedAdvancementDisplayWrapper.craft(getIcon(team), getTitle(team), baseDisplay.getCompactDescription(), getFrame(team).getNMSWrapper(), getX(team), getY(team));
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

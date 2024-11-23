@@ -3,11 +3,10 @@ package com.fren_gor.ultimateAdvancementAPITests.test1;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AbstractPerPlayerAdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
-import com.fren_gor.ultimateAdvancementAPI.nms.wrappers.advancement.PreparedAdvancementDisplayWrapper;
+import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,13 +36,15 @@ public class PerPlayerDisplay extends AbstractPerPlayerAdvancementDisplay {
     }
 
     @Override
-    public @NotNull BaseComponent[] getTitleBaseComponent(@NotNull OfflinePlayer player) {
-        return new ComponentBuilder("Your name is ").append(player.getName()).create();
+    public @NotNull BaseComponent getTitle(@NotNull OfflinePlayer player) {
+        return AdvancementUtils.build(new ComponentBuilder("Your name is ")
+                .append(player.getName())
+        );
     }
 
     @Override
-    public @NotNull List<BaseComponent[]> getDescriptionBaseComponent(@NotNull OfflinePlayer player) {
-        return baseDisplay.getDescriptionBaseComponent();
+    public @NotNull List<BaseComponent> getDescription(@NotNull OfflinePlayer player) {
+        return baseDisplay.getDescription();
     }
 
     @Override
@@ -59,15 +60,5 @@ public class PerPlayerDisplay extends AbstractPerPlayerAdvancementDisplay {
     @Override
     public float getY(@NotNull OfflinePlayer player) {
         return baseDisplay.getY();
-    }
-
-    @Override
-    @NotNull
-    public PreparedAdvancementDisplayWrapper getNMSWrapper(@NotNull Player player) {
-        try {
-            return PreparedAdvancementDisplayWrapper.craft(getIcon(player), getTitle(player), baseDisplay.getCompactDescription(), getFrame(player).getNMSWrapper(), getX(player), getY(player));
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

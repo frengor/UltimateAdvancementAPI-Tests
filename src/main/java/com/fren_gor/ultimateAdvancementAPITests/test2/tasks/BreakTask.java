@@ -1,7 +1,6 @@
 package com.fren_gor.ultimateAdvancementAPITests.test2.tasks;
 
-import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
-import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
+import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplayBuilder;
 import com.fren_gor.ultimateAdvancementAPI.advancement.tasks.AbstractMultiTasksAdvancement;
 import com.fren_gor.ultimateAdvancementAPI.advancement.tasks.TaskAdvancement;
 import com.google.common.base.Preconditions;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.Range;
 public class BreakTask extends TaskAdvancement {
 
     public BreakTask(@NotNull String key, @NotNull AbstractMultiTasksAdvancement parent, @Range(from = 1L, to = Integer.MAX_VALUE) int maxCriteria, @NotNull Material block) {
-        super(key, new AdvancementDisplay(block, "Break " + maxCriteria + " blocks of " + block, AdvancementFrameType.TASK, false, false, 0, 0), parent, maxCriteria);
+        super(key, new AdvancementDisplayBuilder(block, "Break " + maxCriteria + " blocks of " + block).taskFrame().x(0).y(0).build(), parent, maxCriteria);
         Preconditions.checkArgument(block.isBlock(), "Material " + block + " is not a block.");
         registerEvent(BlockBreakEvent.class, e -> {
             if (e.getBlock().getType() == block) {
@@ -25,6 +24,6 @@ public class BreakTask extends TaskAdvancement {
 
     @Override
     public void giveReward(@NotNull Player player) {
-        player.sendMessage("Done task " + display.dispatchGetTitle(player, advancementTab));
+        player.sendMessage("Done task " + display.dispatchGetLegacyTitle(player, advancementTab));
     }
 }

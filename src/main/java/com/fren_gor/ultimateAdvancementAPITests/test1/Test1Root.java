@@ -3,12 +3,13 @@ package com.fren_gor.ultimateAdvancementAPITests.test1;
 import com.fren_gor.ultimateAdvancementAPI.AdvancementTab;
 import com.fren_gor.ultimateAdvancementAPI.advancement.RootAdvancement;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
+import com.fren_gor.ultimateAdvancementAPI.announceMessage.FancyAnnounceMessage;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class Test1Root extends RootAdvancement {
+public class Test1Root extends RootAdvancement implements FancyAnnounceMessage {
 
     public Test1Root(@NotNull AdvancementTab advancementTab, @NotNull String key, @NotNull AdvancementDisplay display) {
         super(advancementTab, key, display);

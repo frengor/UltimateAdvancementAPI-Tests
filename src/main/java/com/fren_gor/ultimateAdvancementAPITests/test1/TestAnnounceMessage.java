@@ -12,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 public interface TestAnnounceMessage extends IAnnounceMessage {
     @Override
     @Nullable
-    default BaseComponent[] getAnnounceMessage(@NotNull Advancement advancement, @NotNull Player advancementCompleter) {
-        return new ComponentBuilder("[Custom announce message] ")
+    default BaseComponent getAnnounceMessage(@NotNull Advancement advancement, @NotNull Player advancementCompleter) {
+        return AdvancementUtils.build(new ComponentBuilder("[Custom announce message] ")
                 .append(AdvancementUtils.getAnnounceMessage(advancement, advancementCompleter))
-                .create();
+        );
     }
 }
