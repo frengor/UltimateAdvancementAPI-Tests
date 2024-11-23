@@ -16,6 +16,7 @@ import com.fren_gor.ultimateAdvancementAPI.events.team.PlayerRegisteredEvent;
 import com.fren_gor.ultimateAdvancementAPI.events.team.TeamUpdateEvent;
 import com.fren_gor.ultimateAdvancementAPI.exceptions.DuplicatedException;
 import com.fren_gor.ultimateAdvancementAPI.exceptions.IllegalOperationException;
+import com.fren_gor.ultimateAdvancementAPI.nms.util.ReflectionUtil;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
 import com.fren_gor.ultimateAdvancementAPI.util.Versions;
 import com.fren_gor.ultimateAdvancementAPITests.test1.MultiParent;
@@ -90,9 +91,9 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
 
         test2Tab = API.createAdvancementTab("test2", "textures/block/stone.png");
 
-        RootAdvancement test2Root = new RootAdvancement(test2Tab, "root", new AdvancementDisplayBuilder(Material.OAK_SAPLING, ChatColor.of(new Color(37, 219, 71)) + "Root").taskFrame().coords(0, 0).build());
+        RootAdvancement test2Root = new RootAdvancement(test2Tab, "root", new AdvancementDisplayBuilder(Material.OAK_SAPLING, ReflectionUtil.VERSION <= 15 ? "Root" : getRGBColor() + "Root").taskFrame().coords(0, 0).build());
 
-        Test2MultiTask tasks = new Test2MultiTask("multi_tasks", new AdvancementDisplayBuilder(Material.STONE, "§6§lBreak blocks").goalFrame().showToast().announceChat().coords(1, 0).description("Break blocks:", "-> 5 Oak planks", "-> 5 Spruce planks", "-> 5 Dark oak planks").build(), test2Root, 15);
+        Test2MultiTask tasks = new Test2MultiTask("multi_tasks", new AdvancementDisplayBuilder(Material.STONE, "§6§lBreak blocks").goalFrame().showToast().announceChat().coords(1, 0).description("Break blocks:", "-> 5 Oak planks", "-> 5 Spruce planks", "-> 5 Dark oak planks").defaultDescriptionColor(ChatColor.GRAY).build(), test2Root, 15);
 
         BreakTask oak = new BreakTask("oak", tasks, 5, Material.OAK_PLANKS);
         BreakTask spruce = new BreakTask("spruce", tasks, 5, Material.SPRUCE_PLANKS);
@@ -104,6 +105,11 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         AdvancementTab ungrantable = API.createAdvancementTab("ungrantable", "textures/block/stone.png");
         ungrantable.registerAdvancements(new RootAdvancement(ungrantable, "ungrantable", new AdvancementDisplayBuilder(Material.BARRIER, "Ungrantable").build()));
         ungrantable.automaticallyShowToPlayers().automaticallyGrantRootAdvancement();
+    }
+
+    // Call only on 1.16+
+    private ChatColor getRGBColor() {
+        return ChatColor.of(new Color(37, 219, 71));
     }
 
     private void registerBackgroundTabs() {
