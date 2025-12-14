@@ -157,6 +157,14 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                 }
                 break;
             }
+            case "remove2": {
+                try {
+                    AdvancementUtils.disableVanillaRecipeAdvancements();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
             case "toast": {
                 if (sender instanceof Player) {
                     Player p = (Player) sender;
