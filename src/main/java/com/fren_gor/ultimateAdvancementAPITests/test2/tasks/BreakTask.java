@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Range;
 
 public class BreakTask extends TaskAdvancement {
 
-    public BreakTask(@NotNull String key, @NotNull AbstractMultiTasksAdvancement parent, @Range(from = 1L, to = Integer.MAX_VALUE) int maxCriteria, @NotNull Material block) {
-        super(key, new AdvancementDisplayBuilder(block, "Break " + maxCriteria + " blocks of " + block).taskFrame().x(0).y(0).build(), parent, maxCriteria);
+    public BreakTask(@NotNull String key, @NotNull AbstractMultiTasksAdvancement multiTask, @Range(from = 1L, to = Integer.MAX_VALUE) int maxCriteria, @NotNull Material block) {
+        super(multiTask, key, maxCriteria, new AdvancementDisplayBuilder(block, "Break " + maxCriteria + " blocks of " + block).taskFrame().x(0).y(0).build());
         Preconditions.checkArgument(block.isBlock(), "Material " + block + " is not a block.");
         registerEvent(BlockBreakEvent.class, e -> {
             if (e.getBlock().getType() == block) {

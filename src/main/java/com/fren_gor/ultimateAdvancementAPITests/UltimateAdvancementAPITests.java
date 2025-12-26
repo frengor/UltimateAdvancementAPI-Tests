@@ -1,6 +1,9 @@
 package com.fren_gor.ultimateAdvancementAPITests;
 
 import com.fren_gor.ultimateAdvancementAPI.AdvancementTab;
+import com.fren_gor.ultimateAdvancementAPI.AdvancementTab.ImmutableTabDisplay;
+import com.fren_gor.ultimateAdvancementAPI.AdvancementTab.PerPlayerTabDisplay;
+import com.fren_gor.ultimateAdvancementAPI.AdvancementTab.PerTeamTabDisplay;
 import com.fren_gor.ultimateAdvancementAPI.UltimateAdvancementAPI;
 import com.fren_gor.ultimateAdvancementAPI.advancement.Advancement;
 import com.fren_gor.ultimateAdvancementAPI.advancement.RootAdvancement;
@@ -9,6 +12,7 @@ import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameT
 import com.fren_gor.ultimateAdvancementAPI.database.DatabaseManager;
 import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
 import com.fren_gor.ultimateAdvancementAPI.events.PlayerLoadingCompletedEvent;
+import com.fren_gor.ultimateAdvancementAPI.events.advancement.AdvancementGrantEvent;
 import com.fren_gor.ultimateAdvancementAPI.events.team.AsyncPlayerUnregisteredEvent;
 import com.fren_gor.ultimateAdvancementAPI.events.team.AsyncTeamLoadEvent;
 import com.fren_gor.ultimateAdvancementAPI.events.team.AsyncTeamUnloadEvent;
@@ -19,6 +23,8 @@ import com.fren_gor.ultimateAdvancementAPI.exceptions.IllegalOperationException;
 import com.fren_gor.ultimateAdvancementAPI.nms.util.ReflectionUtil;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
 import com.fren_gor.ultimateAdvancementAPI.util.Versions;
+import com.fren_gor.ultimateAdvancementAPI.util.display.DefaultStyle;
+import com.fren_gor.ultimateAdvancementAPITests.test1.JsonDisplay;
 import com.fren_gor.ultimateAdvancementAPITests.test1.MultiParent;
 import com.fren_gor.ultimateAdvancementAPITests.test1.MultiParentVanillaVisibility;
 import com.fren_gor.ultimateAdvancementAPITests.test1.PerPlayerDisplay;
@@ -30,6 +36,8 @@ import com.fren_gor.ultimateAdvancementAPITests.test2.Test2MultiTask;
 import com.fren_gor.ultimateAdvancementAPITests.test2.tasks.BreakTask;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -44,7 +52,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
+import java.awt.Color;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -53,6 +61,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -76,24 +85,102 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         Bukkit.getPluginManager().registerEvents(this, this);
         test1Tab = API.createAdvancementTab("test1", "textures/block/stone.png");
 
-        Test1Root root = new Test1Root(test1Tab, "root", new AdvancementDisplayBuilder(Material.NETHER_STAR, "§eTest Root").showToast().announceChat().taskFrame().description("Hello!").coords(0, 2).build());
+        Test1Root root = new Test1Root(test1Tab, "root", new AdvancementDisplayBuilder(Material.NETHER_STAR, "Test Root")
+                .showToast()
+                .announceChat()
+                .taskFrame()
+                .defaultTitleStyle(new DefaultStyle(ChatColor.YELLOW))
+                .announcementMessageDefaultTitleStyle(new DefaultStyle(ChatColor.GOLD))
+                .defaultDescriptionStyle(new DefaultStyle(ChatColor.GREEN))
+                .announcementMessageDefaultDescriptionStyle(new DefaultStyle(ChatColor.DARK_GREEN))
+                .description("Hello", "World!")
+                .coords(0, 2)
+                .build());
 
-        Test1Advancement adv_1_1 = new Test1Advancement("1_1", new PerTeamDisplay(new AdvancementDisplayBuilder(Material.GRASS_BLOCK, "(1, 1)").goalFrame().showToast().announceChat().coords(1, 1).build()), root, 5);
-        Test1Advancement adv_1_3 = new Test1Advancement("1_3", new PerPlayerDisplay(new AdvancementDisplayBuilder(Material.GRAVEL, "(1, 3)").taskFrame().showToast().description("Row 1", "Row 2").coords(1, 3).build()), root, 5);
-        Test1Advancement adv_2_2 = new Test1Advancement("2_2", new AdvancementDisplayBuilder(Material.STICKY_PISTON, "(2, 2)").coords(2, 2).description("Boh").showToast().announceChat().taskFrame().build(), root, 7);
-        Test1AdvancementCustomAM adv_2_1 = new Test1AdvancementCustomAM("2_1", new AdvancementDisplayBuilder(Material.STICKY_PISTON, "(2, 1)").taskFrame().coords(2, 1).showToast().announceChat().build(), adv_1_1, 7);
+        DefaultStyle everything = new DefaultStyle()
+                .color(getRGBColorOr(ChatColor.WHITE))
+                .shadowColor(new Color(143, 86, 86))
+                .bold(true)
+                .font("uniform")
+                .italic(true)
+                .underlined(true)
+                .strikethrough(true);
+        Test1Advancement adv_1_1 = new Test1Advancement("1_1", new PerTeamDisplay(new AdvancementDisplayBuilder(Material.GRASS_BLOCK, "(1, 1)")
+                .goalFrame()
+                .showToast()
+                .announceChat()
+                .announcementMessageDefaultTitleStyle(everything)
+                .description("A description")
+                .defaultDescriptionStyle(everything.obfuscated(true))
+                .announcementMessageDefaultDescriptionStyle(everything.obfuscated(true))
+                .coords(1, 1)
+                .build()), root, 5);
+        Test1Advancement adv_1_3 = new Test1Advancement("1_3", new PerPlayerDisplay(new AdvancementDisplayBuilder(Material.GRAVEL, "(1, 3)")
+                .taskFrame()
+                .showToast()
+                .description("Row 1", "Row 2")
+                .coords(1, 3)
+                .build()), root, 5);
+        Test1Advancement adv_2_2 = new Test1Advancement("2_2", new JsonDisplay(new AdvancementDisplayBuilder(Material.STICKY_PISTON, "(2, 2)")
+                .coords(2, 2)
+                .description("Boh")
+                .showToast()
+                .announceChat()
+                .taskFrame()
+                .build()), root, 7);
+        Test1AdvancementCustomAM adv_2_1 = new Test1AdvancementCustomAM("2_1", new AdvancementDisplayBuilder(Material.STICKY_PISTON, "(2, 1)")
+                .taskFrame()
+                .coords(2, 1)
+                .showToast()
+                .announceChat()
+                .build(), adv_1_1, 7);
 
-        MultiParent multi = new MultiParent("multi", new AdvancementDisplayBuilder(Material.OAK_SAPLING, "§lSaplings").challengeFrame().showToast().announceChat().coords(3, 2.5f).description("§6Description:", "§7Chop trees and get 5 saplings.", "", "§6Rewards:", "§74 Oak saplings.", "§74 Birch saplings.", "§74 Spruce saplings.", "§74 Dark Oak saplings.", "§74 Jungle saplings.").build(), 10, adv_2_2, adv_1_3);
+        MultiParent multi = new MultiParent("multi", 10, new AdvancementDisplayBuilder(Material.OAK_SAPLING, "§lSaplings")
+                .challengeFrame()
+                .showToast()
+                .announceChat()
+                .coords(3, 2.5f)
+                .description(
+                        "§6Description:",
+                        "§7Chop trees and get 5 saplings.",
+                        "",
+                        "§6Rewards:",
+                        "§74 Oak saplings.",
+                        "§74 Birch saplings.",
+                        "§74 Spruce saplings.",
+                        "§74 Dark Oak saplings.",
+                        "§74 Jungle saplings."
+                ).build(), adv_2_2, adv_1_3);
 
-        MultiParentVanillaVisibility multiVanilla = new MultiParentVanillaVisibility("multivanilla", new AdvancementDisplayBuilder(Material.ANVIL, "§7Anvils").challengeFrame().showToast().announceChat().coords(4, 2f).build(), 10, multi, adv_2_1, adv_2_2);
+        MultiParentVanillaVisibility multiVanilla = new MultiParentVanillaVisibility("multivanilla", 10, new AdvancementDisplayBuilder(Material.ANVIL, "§7Anvils")
+                .challengeFrame()
+                .showToast()
+                .announceChat()
+                .announcementMessageDefaultTitleStyle(new DefaultStyle(ChatColor.GRAY))
+                .coords(4, 2f)
+                .build(), multi, adv_2_1, adv_2_2);
 
         test1Tab.registerAdvancements(root, adv_1_1, adv_1_3, adv_2_2, adv_2_1, multi, multiVanilla);
 
         test2Tab = API.createAdvancementTab("test2", "textures/block/stone.png");
 
-        RootAdvancement test2Root = new RootAdvancement(test2Tab, "root", new AdvancementDisplayBuilder(Material.OAK_SAPLING, ReflectionUtil.VERSION <= 15 ? "Root" : getRGBColor() + "Root").taskFrame().coords(0, 0).build());
+        RootAdvancement test2Root = new RootAdvancement(test2Tab, "root", new AdvancementDisplayBuilder(Material.OAK_SAPLING, "Root")
+                .taskFrame()
+                .defaultTitleStyle(new DefaultStyle(getRGBColorOr(ChatColor.WHITE)))
+                .announcementMessageDefaultTitleStyle(new DefaultStyle(getRGBColorOr(ChatColor.WHITE)))
+                .announceChat()
+                .showToast()
+                .coords(0, 0)
+                .build());
 
-        Test2MultiTask tasks = new Test2MultiTask("multi_tasks", new AdvancementDisplayBuilder(Material.STONE, "§6§lBreak blocks").goalFrame().showToast().announceChat().coords(1, 0).description("Break blocks:", "-> 5 Oak planks", "-> 5 Spruce planks", "-> 5 Dark oak planks").defaultDescriptionColor(ChatColor.GRAY).build(), test2Root, 15);
+        Test2MultiTask tasks = new Test2MultiTask(test2Root, "multi_tasks", 15, new AdvancementDisplayBuilder(Material.STONE, "§6§lBreak blocks")
+                .goalFrame()
+                .showToast()
+                .announceChat()
+                .coords(1, 0)
+                .description("Break blocks:", "-> 5 Oak planks", "-> 5 Spruce planks", "-> 5 Dark oak planks")
+                .defaultDescriptionStyle(new DefaultStyle(ChatColor.GRAY))
+                .build());
 
         BreakTask oak = new BreakTask("oak", tasks, 5, Material.OAK_PLANKS);
         BreakTask spruce = new BreakTask("spruce", tasks, 5, Material.SPRUCE_PLANKS);
@@ -103,27 +190,81 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         test2Tab.registerAdvancements(test2Root, tasks);
 
         AdvancementTab ungrantable = API.createAdvancementTab("ungrantable", "textures/block/stone.png");
-        ungrantable.registerAdvancements(new RootAdvancement(ungrantable, "ungrantable", new AdvancementDisplayBuilder(Material.BARRIER, "Ungrantable").build()));
+        ungrantable.registerAdvancements(new RootAdvancement(ungrantable, "ungrantable", new AdvancementDisplayBuilder(Material.BARRIER, "Ungrantable")
+                .showToast()
+                .announceChat()
+                .build()));
         ungrantable.automaticallyShowToPlayers().automaticallyGrantRootAdvancement();
+        ungrantable.setShowToastToTeam(false);
+        ungrantable.setSendAnnouncementMessageOnlyToTeam(true);
     }
 
-    // Call only on 1.16+
-    private ChatColor getRGBColor() {
-        return ChatColor.of(new Color(37, 219, 71));
+    private ChatColor getRGBColorOr(ChatColor defaultColor) {
+        // Call ChatColor.of(...) only on 1.16+
+        return ReflectionUtil.VERSION <= 15 ? defaultColor : ChatColor.of(new Color(143, 86, 86));
     }
 
     private void registerBackgroundTabs() {
-        var staticBgImm = API.createAdvancementTab("static-imm", "textures/block/stone.png");
-        var staticBgTeam = API.createAdvancementTab("static-team", "textures/block/stone.png");
-        var staticBgPlayer = API.createAdvancementTab("static-player", "textures/block/stone.png");
+        var immutableTabDisplay = new ImmutableTabDisplay() {
+            @Override
+            public @NotNull String getBackgroundTexture() {
+                return "textures/block/stone.png";
+            }
 
-        var perTeamBgImm = API.createAdvancementTab("per-team-imm", (TeamProgression p) -> "textures/block/bedrock.png");
-        var perTeamBgTeam = API.createAdvancementTab("per-team-team", (TeamProgression p) -> "textures/block/bedrock.png");
-        var perTeamBgPlayer = API.createAdvancementTab("per-team-player", (TeamProgression p) -> "textures/block/bedrock.png");
+            @Override
+            public @NotNull Optional<ItemStack> getIcon() {
+                return Optional.of(new ItemStack(Material.GOLD_BLOCK));
+            }
 
-        var perPlayerBgImm = API.createAdvancementTab("per-player-imm", (Player p) -> "textures/block/beacon.png");
-        var perPlayerBgTeam = API.createAdvancementTab("per-player-team", (Player p) -> "textures/block/beacon.png");
-        var perPlayerBgPlayer = API.createAdvancementTab("per-player-player", (Player p) -> "textures/block/beacon.png");
+            @Override
+            public @NotNull Optional<BaseComponent> getTitle() {
+                return Optional.of(new TextComponent("Immutable Tab"));
+            }
+        };
+        var perTeamTabDisplay = new PerTeamTabDisplay() {
+            @Override
+            public @NotNull String getBackgroundTexture(@NotNull TeamProgression pro) {
+                return "textures/block/bedrock.png";
+            }
+
+            @Override
+            public @NotNull Optional<ItemStack> getIcon(@NotNull TeamProgression pro) {
+                return Optional.of(new ItemStack(Material.NETHER_GOLD_ORE));
+            }
+
+            @Override
+            public @NotNull Optional<BaseComponent> getTitle(@NotNull TeamProgression pro) {
+                return Optional.of(new TextComponent("Per Team Tab"));
+            }
+        };
+        var perPlayerTabDisplay = new PerPlayerTabDisplay() {
+            @Override
+            public @NotNull String getBackgroundTexture(@NotNull Player player) {
+                return "textures/block/beacon.png";
+            }
+
+            @Override
+            public @NotNull Optional<ItemStack> getIcon(@NotNull Player player) {
+                return Optional.of(new ItemStack(Material.DEEPSLATE_GOLD_ORE));
+            }
+
+            @Override
+            public @NotNull Optional<BaseComponent> getTitle(@NotNull Player player) {
+                return Optional.of(new TextComponent("Per Player Tab"));
+            }
+        };
+
+        var staticBgImm = API.createAdvancementTab("static-imm", immutableTabDisplay);
+        var staticBgTeam = API.createAdvancementTab("static-team", immutableTabDisplay);
+        var staticBgPlayer = API.createAdvancementTab("static-player", immutableTabDisplay);
+
+        var perTeamBgImm = API.createAdvancementTab("per-team-imm", perTeamTabDisplay);
+        var perTeamBgTeam = API.createAdvancementTab("per-team-team", perTeamTabDisplay);
+        var perTeamBgPlayer = API.createAdvancementTab("per-team-player", perTeamTabDisplay);
+
+        var perPlayerBgImm = API.createAdvancementTab("per-player-imm", perPlayerTabDisplay);
+        var perPlayerBgTeam = API.createAdvancementTab("per-player-team", perPlayerTabDisplay);
+        var perPlayerBgPlayer = API.createAdvancementTab("per-player-player", perPlayerTabDisplay);
 
         staticBgImm.registerAdvancements(new RootAdvancement(staticBgImm, "root", new AdvancementDisplayBuilder(Material.STONE, "Static").description("Static bg, display Immutable").build()));
         staticBgTeam.registerAdvancements(new RootAdvancement(staticBgTeam, "root", new PerTeamDisplay(new AdvancementDisplayBuilder(Material.STONE, "Static").description("Static bg, display PerTeam").build())));
@@ -243,6 +384,11 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         AdvancementUtils.displayToast(e.getPlayer(), new ItemStack(Material.GRASS_BLOCK), "Join", AdvancementFrameType.CHALLENGE);
     }
 
+    @EventHandler
+    private void onAdvGranted(AdvancementGrantEvent e) {
+        System.out.println(e);
+    }
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (!command.getName().equals("testadv")) {
@@ -316,6 +462,27 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     return null;
                 });
             }
+            case "loadteam" -> {
+                if (args.length == 1) {
+                    sender.sendMessage("§cIllegal syntax.");
+                    return false;
+                }
+                int teamId;
+                try {
+                    teamId = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    sender.sendMessage("§cInvalid id.");
+                    return false;
+                }
+                test1Tab.getDatabaseManager().loadAndAddLoadingRequestToTeam(teamId, this).handle((pro, err) -> {
+                    if (err != null) {
+                        err.printStackTrace();
+                    } else {
+                        sender.sendMessage("LoadTeam teamId: " + pro.getTeamId());
+                    }
+                    return null;
+                });
+            }
             case "unload" -> {
                 if (args.length == 1) {
                     sender.sendMessage("§cIllegal syntax.");
@@ -369,7 +536,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     if (err != null) {
                         err.printStackTrace();
                     } else {
-                        sender.sendMessage("UpdatePlayerTeam!");
+                        sender.sendMessage("Moved player!");
                     }
                     return null;
                 });
@@ -395,7 +562,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                         if (err != null) {
                             err.printStackTrace();
                         } else {
-                            sender.sendMessage("UnregisterPlayer teamId: " + pro.getTeamId());
+                            sender.sendMessage("Apart teamId: " + pro.getTeamId());
                         }
                         return null;
                     });
@@ -409,7 +576,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                         if (err != null) {
                             err.printStackTrace();
                         } else {
-                            sender.sendMessage("UnregisterPlayer teamId: " + pro.getTeamId());
+                            sender.sendMessage("Apart teamId: " + pro.getTeamId());
                         }
                         return null;
                     });

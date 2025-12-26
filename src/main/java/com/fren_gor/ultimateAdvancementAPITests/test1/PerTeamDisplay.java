@@ -5,6 +5,7 @@ import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDispla
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
 import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
+import com.fren_gor.ultimateAdvancementAPI.util.display.DefaultStyle;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.inventory.ItemStack;
@@ -31,24 +32,28 @@ public class PerTeamDisplay extends AbstractPerTeamAdvancementDisplay {
     }
 
     @Override
-    public @NotNull ItemStack getIcon(@NotNull TeamProgression progression) {
+    @NotNull
+    public ItemStack getIcon(@NotNull TeamProgression progression) {
         return baseDisplay.getIcon();
     }
 
     @Override
-    public @NotNull BaseComponent getTitle(@NotNull TeamProgression progression) {
+    @NotNull
+    public BaseComponent getTitle(@NotNull TeamProgression progression) {
         return AdvancementUtils.build(new ComponentBuilder("Your team id is ")
                 .append(String.valueOf(progression.getTeamId()))
         );
     }
 
     @Override
-    public @NotNull List<BaseComponent> getDescription(@NotNull TeamProgression progression) {
+    @NotNull
+    public List<BaseComponent> getDescription(@NotNull TeamProgression progression) {
         return baseDisplay.getDescription();
     }
 
     @Override
-    public @NotNull AdvancementFrameType getFrame(@NotNull TeamProgression progression) {
+    @NotNull
+    public AdvancementFrameType getFrame(@NotNull TeamProgression progression) {
         return baseDisplay.getFrame();
     }
 
@@ -60,5 +65,29 @@ public class PerTeamDisplay extends AbstractPerTeamAdvancementDisplay {
     @Override
     public float getY(@NotNull TeamProgression progression) {
         return baseDisplay.getY();
+    }
+
+    @Override
+    @NotNull
+    public DefaultStyle getDefaultTitleStyle(@NotNull TeamProgression progression) {
+        return baseDisplay.getDefaultTitleStyle();
+    }
+
+    @Override
+    @NotNull
+    public DefaultStyle getAnnouncementMessageDefaultTitleStyle(@NotNull TeamProgression progression) {
+        return baseDisplay.getAnnouncementMessageDefaultTitleStyle();
+    }
+
+    @Override
+    @NotNull
+    public DefaultStyle getDefaultDescriptionStyle(@NotNull TeamProgression progression) {
+        return baseDisplay.getDefaultDescriptionStyle();
+    }
+
+    @Override
+    @NotNull
+    public DefaultStyle getAnnouncementMessageDefaultDescriptionStyle(@NotNull TeamProgression progression) {
+        return baseDisplay.getAnnouncementMessageDefaultDescriptionStyle();
     }
 }

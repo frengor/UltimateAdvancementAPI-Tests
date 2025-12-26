@@ -3,7 +3,9 @@ package com.fren_gor.ultimateAdvancementAPITests.test1;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AbstractPerPlayerAdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
+import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
+import com.fren_gor.ultimateAdvancementAPI.util.display.DefaultStyle;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.OfflinePlayer;
@@ -31,12 +33,14 @@ public class PerPlayerDisplay extends AbstractPerPlayerAdvancementDisplay {
     }
 
     @Override
-    public @NotNull ItemStack getIcon(@NotNull OfflinePlayer player) {
+    @NotNull
+    public ItemStack getIcon(@NotNull OfflinePlayer player) {
         return baseDisplay.getIcon();
     }
 
     @Override
-    public @NotNull BaseComponent getTitle(@NotNull OfflinePlayer player) {
+    @NotNull
+    public BaseComponent getTitle(@NotNull OfflinePlayer player) {
         return AdvancementUtils.build(new ComponentBuilder("Your name is ")
                 .append(player.getName())
         );
@@ -60,5 +64,29 @@ public class PerPlayerDisplay extends AbstractPerPlayerAdvancementDisplay {
     @Override
     public float getY(@NotNull OfflinePlayer player) {
         return baseDisplay.getY();
+    }
+
+    @Override
+    @NotNull
+    public DefaultStyle getDefaultTitleStyle(@NotNull OfflinePlayer player) {
+        return baseDisplay.getDefaultTitleStyle();
+    }
+
+    @Override
+    @NotNull
+    public DefaultStyle getAnnouncementMessageDefaultTitleStyle(@NotNull OfflinePlayer player) {
+        return baseDisplay.getAnnouncementMessageDefaultTitleStyle();
+    }
+
+    @Override
+    @NotNull
+    public DefaultStyle getDefaultDescriptionStyle(@NotNull OfflinePlayer player) {
+        return baseDisplay.getDefaultDescriptionStyle();
+    }
+
+    @Override
+    @NotNull
+    public DefaultStyle getAnnouncementMessageDefaultDescriptionStyle(@NotNull OfflinePlayer player) {
+        return baseDisplay.getAnnouncementMessageDefaultDescriptionStyle();
     }
 }

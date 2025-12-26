@@ -10,8 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class MultiParent extends MultiParentsAdvancement implements ParentGrantedVisibility {
-    public MultiParent(@NotNull String key, @NotNull AdvancementDisplay display, int maxCriteria, @NotNull BaseAdvancement... parents) {
-        super(key, display, maxCriteria, parents);
+    public MultiParent(@NotNull String key, int maxCriteria, @NotNull AdvancementDisplay display, @NotNull BaseAdvancement... parents) {
+        super(key, maxCriteria, display, parents);
         registerEvent(BlockBreakEvent.class, e -> {
             if (e.getBlock().getType() == display.getIcon().getType()) {
                 incrementProgression(e.getPlayer());

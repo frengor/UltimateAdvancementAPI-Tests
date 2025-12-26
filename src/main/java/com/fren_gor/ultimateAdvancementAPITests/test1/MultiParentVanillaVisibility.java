@@ -6,7 +6,7 @@ import com.fren_gor.ultimateAdvancementAPI.visibilities.VanillaVisibility;
 import org.jetbrains.annotations.NotNull;
 
 public class MultiParentVanillaVisibility extends MultiParent implements VanillaVisibility {
-    public MultiParentVanillaVisibility(@NotNull String key, @NotNull AdvancementDisplay display, int maxCriteria, @NotNull BaseAdvancement... parents) {
-        super(key, display, maxCriteria, parents);
+    public MultiParentVanillaVisibility(@NotNull String key, int maxCriteria, @NotNull AdvancementDisplay display, @NotNull BaseAdvancement... parents) {
+        super(key, maxCriteria, display, parents);
     }
 }
