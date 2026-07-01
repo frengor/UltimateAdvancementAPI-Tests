@@ -426,6 +426,13 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     e.printStackTrace();
                 }
             }
+            case "remove2" -> {
+                try {
+                    AdvancementUtils.disableVanillaRecipeAdvancements();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             case "toast" -> {
                 if (sender instanceof Player p) {
                     new BukkitRunnable() {
@@ -453,7 +460,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     return false;
                 }
                 UUID uuid = UUID.fromString(args[1]);
-                API.loadAndAddLoadingRequestToPlayer(uuid).handle((pro, err) -> {
+                API.loadAndAddLoadingRequest(uuid).handle((pro, err) -> {
                     if (err != null) {
                         err.printStackTrace();
                     } else {
@@ -474,7 +481,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     sender.sendMessage("§cInvalid id.");
                     return false;
                 }
-                test1Tab.getDatabaseManager().loadAndAddLoadingRequestToTeam(teamId, this).handle((pro, err) -> {
+                API.loadAndAddLoadingRequest(teamId).handle((pro, err) -> {
                     if (err != null) {
                         err.printStackTrace();
                     } else {
@@ -489,7 +496,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     return false;
                 }
                 UUID uuid = UUID.fromString(args[1]);
-                API.removeLoadingRequestToPlayer(uuid);
+                API.removeLoadingRequest(uuid);
             }
             case "dump" -> { // Dump database manager
                 final DatabaseManager manager = test1Tab.getDatabaseManager();
