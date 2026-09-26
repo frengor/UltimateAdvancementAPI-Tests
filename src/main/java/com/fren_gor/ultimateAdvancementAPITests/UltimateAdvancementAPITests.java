@@ -80,7 +80,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
 
         test2Tab = API.createAdvancementTab("test2");
 
-        RootAdvancement test2Root = new RootAdvancement(test2Tab, "root", new AdvancementDisplay.Builder(Material.OAK_SAPLING, "Root").taskFrame().coords(0, 0).build(), "textures/block/stone.png");
+        RootAdvancement test2Root = new RootAdvancement(test2Tab, "root", new AdvancementDisplay.Builder(Material.OAK_SAPLING, "Root").taskFrame().coords(0, 0).build(), "atextures/block/stone.png");
 
         Test2MultiTask tasks = new Test2MultiTask("multi_tasks", new AdvancementDisplay.Builder(Material.STONE, "§6§lBreak blocks").goalFrame().showToast().announceChat().coords(1, 0).description("", "Break blocks:", "-> 5 Oak planks", "-> 5 Spruce planks", "-> 5 Dark oak planks").build(), test2Root, 15);
 
