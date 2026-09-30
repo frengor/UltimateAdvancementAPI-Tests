@@ -55,6 +55,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.Color;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
@@ -66,6 +67,7 @@ import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class UltimateAdvancementAPITests extends JavaPlugin implements Listener {
 
@@ -435,14 +437,18 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
             }
             case "toast" -> {
                 if (sender instanceof Player p) {
+                    String text = Arrays.stream(args)
+                        .skip(1)
+                        .map(s -> s.replace("\\n", "\n"))
+                        .collect(Collectors.joining(" "));
                     new BukkitRunnable() {
                         @Override
                         public void run() {
-                            AdvancementUtils.displayToast(p, new ItemStack(Material.GRASS_BLOCK), "Test", AdvancementFrameType.CHALLENGE);
+                            AdvancementUtils.displayToast(p, new ItemStack(Material.GRASS_BLOCK), text.isEmpty() ? "Test" : text, AdvancementFrameType.CHALLENGE);
                         }
                     }.runTaskLater(this, 40);
                 } else {
-                    if (args.length != 2) {
+                    if (args.length < 2) {
                         sender.sendMessage("§cIllegal syntax.");
                         return false;
                     }
@@ -451,7 +457,11 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                         sender.sendMessage("§cThat player is not online.");
                         return false;
                     }
-                    AdvancementUtils.displayToast(p, new ItemStack(Material.GRASS_BLOCK), "Test", AdvancementFrameType.CHALLENGE);
+                    String text = Arrays.stream(args)
+                        .skip(2)
+                        .map(s -> s.replace("\\n", "\n"))
+                        .collect(Collectors.joining(" "));
+                    AdvancementUtils.displayToast(p, new ItemStack(Material.GRASS_BLOCK), text.isEmpty() ? "Test" : text, AdvancementFrameType.CHALLENGE);
                 }
             }
             case "load" -> {
