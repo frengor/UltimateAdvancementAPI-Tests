@@ -42,6 +42,7 @@ public class PerTeamDisplay extends AbstractPerTeamAdvancementDisplay {
     public BaseComponent getTitle(@NotNull TeamProgression progression) {
         return AdvancementUtils.build(new ComponentBuilder("Your team id is ")
                 .append(String.valueOf(progression.getTeamId()))
+                .append(" (" + progression.getSize() + " members)")
         );
     }
 
