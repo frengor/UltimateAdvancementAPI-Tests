@@ -2,9 +2,7 @@ package com.fren_gor.ultimateAdvancementAPITests.test1;
 
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.nms.wrappers.advancement.PreparedAdvancementDisplayWrapper;
-import com.fren_gor.ultimateAdvancementAPI.nms.util.JsonString;
 import com.fren_gor.ultimateAdvancementAPI.util.LazyValue;
-import net.md_5.bungee.chat.ComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
 public class JsonDisplay extends AdvancementDisplay {
@@ -36,8 +34,6 @@ public class JsonDisplay extends AdvancementDisplay {
         }
 
         var old = super.getNMSWrapper();
-        String title = ComponentSerializer.toString(old.getTitle());
-        String desc = ComponentSerializer.toString(old.getDescription());
-        return wrapper = PreparedAdvancementDisplayWrapper.craft(getIcon(), new JsonString(title), new JsonString(desc), getFrame().getNMSWrapper(), getX(), getY());
+        return wrapper = PreparedAdvancementDisplayWrapper.craft(getIcon(), old.getTitle(), old.getDescription(), getFrame().getNMSWrapper(), getX(), getY());
     }
 }
