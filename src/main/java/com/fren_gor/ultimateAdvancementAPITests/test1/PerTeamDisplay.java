@@ -3,11 +3,10 @@ package com.fren_gor.ultimateAdvancementAPITests.test1;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AbstractPerTeamAdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
+import com.fren_gor.ultimateAdvancementAPI.chat.IComponent;
+import com.fren_gor.ultimateAdvancementAPI.chat.IDefaultStyle;
+import com.fren_gor.ultimateAdvancementAPI.chat.bungeecord.BungeeCordComponent;
 import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
-import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
-import com.fren_gor.ultimateAdvancementAPI.util.display.DefaultStyle;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,16 +38,15 @@ public class PerTeamDisplay extends AbstractPerTeamAdvancementDisplay {
 
     @Override
     @NotNull
-    public BaseComponent getTitle(@NotNull TeamProgression progression) {
-        return AdvancementUtils.build(new ComponentBuilder("Your team id is ")
-                .append(String.valueOf(progression.getTeamId()))
-                .append(" (" + progression.getSize() + " members)")
-        );
+    public IComponent getTitle(@NotNull TeamProgression progression) {
+        return BungeeCordComponent.ofLegacy("Your team id is ")
+                .append(BungeeCordComponent.ofLegacy(String.valueOf(progression.getTeamId())))
+                .append(BungeeCordComponent.ofLegacy(" (" + progression.getSize() + " members)"));
     }
 
     @Override
     @NotNull
-    public List<BaseComponent> getDescription(@NotNull TeamProgression progression) {
+    public List<IComponent> getDescription(@NotNull TeamProgression progression) {
         return baseDisplay.getDescription();
     }
 
@@ -70,25 +68,25 @@ public class PerTeamDisplay extends AbstractPerTeamAdvancementDisplay {
 
     @Override
     @NotNull
-    public DefaultStyle getDefaultTitleStyle(@NotNull TeamProgression progression) {
+    public IDefaultStyle getDefaultTitleStyle(@NotNull TeamProgression progression) {
         return baseDisplay.getDefaultTitleStyle();
     }
 
     @Override
     @NotNull
-    public DefaultStyle getAnnouncementMessageDefaultTitleStyle(@NotNull TeamProgression progression) {
+    public IDefaultStyle getAnnouncementMessageDefaultTitleStyle(@NotNull TeamProgression progression) {
         return baseDisplay.getAnnouncementMessageDefaultTitleStyle();
     }
 
     @Override
     @NotNull
-    public DefaultStyle getDefaultDescriptionStyle(@NotNull TeamProgression progression) {
+    public IDefaultStyle getDefaultDescriptionStyle(@NotNull TeamProgression progression) {
         return baseDisplay.getDefaultDescriptionStyle();
     }
 
     @Override
     @NotNull
-    public DefaultStyle getAnnouncementMessageDefaultDescriptionStyle(@NotNull TeamProgression progression) {
+    public IDefaultStyle getAnnouncementMessageDefaultDescriptionStyle(@NotNull TeamProgression progression) {
         return baseDisplay.getAnnouncementMessageDefaultDescriptionStyle();
     }
 }

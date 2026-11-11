@@ -3,11 +3,9 @@ package com.fren_gor.ultimateAdvancementAPITests.test1;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AbstractPerPlayerAdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplay;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
-import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
-import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
-import com.fren_gor.ultimateAdvancementAPI.util.display.DefaultStyle;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import com.fren_gor.ultimateAdvancementAPI.chat.IComponent;
+import com.fren_gor.ultimateAdvancementAPI.chat.IDefaultStyle;
+import com.fren_gor.ultimateAdvancementAPI.chat.bungeecord.BungeeCordComponent;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -40,14 +38,12 @@ public class PerPlayerDisplay extends AbstractPerPlayerAdvancementDisplay {
 
     @Override
     @NotNull
-    public BaseComponent getTitle(@NotNull OfflinePlayer player) {
-        return AdvancementUtils.build(new ComponentBuilder("Your name is ")
-                .append(player.getName())
-        );
+    public IComponent getTitle(@NotNull OfflinePlayer player) {
+        return BungeeCordComponent.of("Your name is ").append(BungeeCordComponent.of(player.getName()));
     }
 
     @Override
-    public @NotNull List<BaseComponent> getDescription(@NotNull OfflinePlayer player) {
+    public @NotNull List<IComponent> getDescription(@NotNull OfflinePlayer player) {
         return baseDisplay.getDescription();
     }
 
@@ -68,25 +64,25 @@ public class PerPlayerDisplay extends AbstractPerPlayerAdvancementDisplay {
 
     @Override
     @NotNull
-    public DefaultStyle getDefaultTitleStyle(@NotNull OfflinePlayer player) {
+    public IDefaultStyle getDefaultTitleStyle(@NotNull OfflinePlayer player) {
         return baseDisplay.getDefaultTitleStyle();
     }
 
     @Override
     @NotNull
-    public DefaultStyle getAnnouncementMessageDefaultTitleStyle(@NotNull OfflinePlayer player) {
+    public IDefaultStyle getAnnouncementMessageDefaultTitleStyle(@NotNull OfflinePlayer player) {
         return baseDisplay.getAnnouncementMessageDefaultTitleStyle();
     }
 
     @Override
     @NotNull
-    public DefaultStyle getDefaultDescriptionStyle(@NotNull OfflinePlayer player) {
+    public IDefaultStyle getDefaultDescriptionStyle(@NotNull OfflinePlayer player) {
         return baseDisplay.getDefaultDescriptionStyle();
     }
 
     @Override
     @NotNull
-    public DefaultStyle getAnnouncementMessageDefaultDescriptionStyle(@NotNull OfflinePlayer player) {
+    public IDefaultStyle getAnnouncementMessageDefaultDescriptionStyle(@NotNull OfflinePlayer player) {
         return baseDisplay.getAnnouncementMessageDefaultDescriptionStyle();
     }
 }

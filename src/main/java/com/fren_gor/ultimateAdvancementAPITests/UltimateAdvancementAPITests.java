@@ -9,6 +9,9 @@ import com.fren_gor.ultimateAdvancementAPI.advancement.Advancement;
 import com.fren_gor.ultimateAdvancementAPI.advancement.RootAdvancement;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementDisplayBuilder;
 import com.fren_gor.ultimateAdvancementAPI.advancement.display.AdvancementFrameType;
+import com.fren_gor.ultimateAdvancementAPI.chat.IComponent;
+import com.fren_gor.ultimateAdvancementAPI.chat.bungeecord.BungeeCordComponent;
+import com.fren_gor.ultimateAdvancementAPI.chat.bungeecord.BungeeCordDefaultStyle;
 import com.fren_gor.ultimateAdvancementAPI.database.DatabaseManager;
 import com.fren_gor.ultimateAdvancementAPI.database.TeamProgression;
 import com.fren_gor.ultimateAdvancementAPI.events.PlayerLoadingCompletedEvent;
@@ -17,13 +20,13 @@ import com.fren_gor.ultimateAdvancementAPI.events.team.AsyncPlayerUnregisteredEv
 import com.fren_gor.ultimateAdvancementAPI.events.team.AsyncTeamLoadEvent;
 import com.fren_gor.ultimateAdvancementAPI.events.team.AsyncTeamUnloadEvent;
 import com.fren_gor.ultimateAdvancementAPI.events.team.PlayerRegisteredEvent;
-import com.fren_gor.ultimateAdvancementAPI.events.team.TeamUpdateEvent;
+import com.fren_gor.ultimateAdvancementAPI.events.team.TeamUpdatedEvent;
 import com.fren_gor.ultimateAdvancementAPI.exceptions.DuplicatedException;
 import com.fren_gor.ultimateAdvancementAPI.exceptions.IllegalOperationException;
-import com.fren_gor.ultimateAdvancementAPI.nms.util.ReflectionUtil;
 import com.fren_gor.ultimateAdvancementAPI.util.AdvancementUtils;
 import com.fren_gor.ultimateAdvancementAPI.util.Versions;
-import com.fren_gor.ultimateAdvancementAPI.util.display.DefaultStyle;
+import com.fren_gor.ultimateAdvancementAPITests.chat.AdventureTest;
+import com.fren_gor.ultimateAdvancementAPITests.chat.BungeeCordTest;
 import com.fren_gor.ultimateAdvancementAPITests.test1.JsonDisplay;
 import com.fren_gor.ultimateAdvancementAPITests.test1.MultiParent;
 import com.fren_gor.ultimateAdvancementAPITests.test1.MultiParentVanillaVisibility;
@@ -36,8 +39,6 @@ import com.fren_gor.ultimateAdvancementAPITests.test2.Test2MultiTask;
 import com.fren_gor.ultimateAdvancementAPITests.test2.tasks.BreakTask;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -52,7 +53,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.Color;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -91,30 +91,22 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                 .showToast()
                 .announceChat()
                 .taskFrame()
-                .defaultTitleStyle(new DefaultStyle(ChatColor.YELLOW))
-                .announcementMessageDefaultTitleStyle(new DefaultStyle(ChatColor.GOLD))
-                .defaultDescriptionStyle(new DefaultStyle(ChatColor.GREEN))
-                .announcementMessageDefaultDescriptionStyle(new DefaultStyle(ChatColor.DARK_GREEN))
+                .defaultTitleStyle(BungeeCordDefaultStyle.of(ChatColor.YELLOW))
+                .announcementMessageDefaultTitleStyle(BungeeCordDefaultStyle.of(ChatColor.GOLD))
+                .defaultDescriptionStyle(BungeeCordDefaultStyle.of(ChatColor.GREEN))
+                .announcementMessageDefaultDescriptionStyle(BungeeCordDefaultStyle.of(ChatColor.DARK_GREEN))
                 .description("Hello", "World!")
                 .coords(0, 2)
                 .build());
 
-        DefaultStyle everything = new DefaultStyle()
-                .color(getRGBColorOr(ChatColor.WHITE))
-                .shadowColor(new Color(143, 86, 86))
-                .bold(true)
-                .font("uniform")
-                .italic(true)
-                .underlined(true)
-                .strikethrough(true);
         Test1Advancement adv_1_1 = new Test1Advancement("1_1", new PerTeamDisplay(new AdvancementDisplayBuilder(Material.GRASS_BLOCK, "(1, 1)")
                 .goalFrame()
                 .showToast()
                 .announceChat()
-                .announcementMessageDefaultTitleStyle(everything)
+                .announcementMessageDefaultTitleStyle(BungeeCordDefaultStyle.of(BungeeCordTest.EVERYTHING_NO_OBF))
                 .description("A description")
-                .defaultDescriptionStyle(everything.obfuscated(true))
-                .announcementMessageDefaultDescriptionStyle(everything.obfuscated(true))
+                .defaultDescriptionStyle(BungeeCordDefaultStyle.of(BungeeCordTest.EVERYTHING_NO_OBF.obfuscated(true)))
+                .announcementMessageDefaultDescriptionStyle(BungeeCordDefaultStyle.of(BungeeCordTest.EVERYTHING_NO_OBF.obfuscated(true)))
                 .coords(1, 1)
                 .build()), root, 5);
         Test1Advancement adv_1_3 = new Test1Advancement("1_3", new PerPlayerDisplay(new AdvancementDisplayBuilder(Material.GRAVEL, "(1, 3)")
@@ -158,7 +150,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                 .challengeFrame()
                 .showToast()
                 .announceChat()
-                .announcementMessageDefaultTitleStyle(new DefaultStyle(ChatColor.GRAY))
+                .announcementMessageDefaultTitleStyle(BungeeCordDefaultStyle.of(ChatColor.GRAY))
                 .coords(4, 2f)
                 .build(), multi, adv_2_1, adv_2_2);
 
@@ -168,8 +160,8 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
 
         RootAdvancement test2Root = new RootAdvancement(test2Tab, "root", new AdvancementDisplayBuilder(Material.OAK_SAPLING, "Root")
                 .taskFrame()
-                .defaultTitleStyle(new DefaultStyle(getRGBColorOr(ChatColor.WHITE)))
-                .announcementMessageDefaultTitleStyle(new DefaultStyle(getRGBColorOr(ChatColor.WHITE)))
+                .defaultTitleStyle(BungeeCordDefaultStyle.of(BungeeCordTest.getRGBColorOr(ChatColor.WHITE)))
+                .announcementMessageDefaultTitleStyle(BungeeCordDefaultStyle.of(BungeeCordTest.getRGBColorOr(ChatColor.WHITE)))
                 .announceChat()
                 .showToast()
                 .coords(0, 0)
@@ -181,7 +173,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                 .announceChat()
                 .coords(1, 0)
                 .description("Break blocks:", "-> 5 Oak planks", "-> 5 Spruce planks", "-> 5 Dark oak planks")
-                .defaultDescriptionStyle(new DefaultStyle(ChatColor.GRAY))
+                .defaultDescriptionStyle(BungeeCordDefaultStyle.of(ChatColor.GRAY))
                 .build());
 
         BreakTask oak = new BreakTask("oak", tasks, 5, Material.OAK_PLANKS);
@@ -201,11 +193,6 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         ungrantable.setSendAnnouncementMessageOnlyToTeam(true);
     }
 
-    private ChatColor getRGBColorOr(ChatColor defaultColor) {
-        // Call ChatColor.of(...) only on 1.16+
-        return ReflectionUtil.VERSION <= 15 ? defaultColor : ChatColor.of(new Color(143, 86, 86));
-    }
-
     private void registerBackgroundTabs() {
         var immutableTabDisplay = new ImmutableTabDisplay() {
             @Override
@@ -219,8 +206,8 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
             }
 
             @Override
-            public @NotNull Optional<BaseComponent> getTitle() {
-                return Optional.of(new TextComponent("Immutable Tab"));
+            public @NotNull Optional<IComponent> getTitle() {
+                return Optional.of(BungeeCordComponent.of("Immutable Tab"));
             }
         };
         var perTeamTabDisplay = new PerTeamTabDisplay() {
@@ -235,8 +222,8 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
             }
 
             @Override
-            public @NotNull Optional<BaseComponent> getTitle(@NotNull TeamProgression pro) {
-                return Optional.of(new TextComponent("Per Team Tab"));
+            public @NotNull Optional<IComponent> getTitle(@NotNull TeamProgression pro) {
+                return Optional.of(BungeeCordComponent.of("Per Team Tab"));
             }
         };
         var perPlayerTabDisplay = new PerPlayerTabDisplay() {
@@ -251,8 +238,8 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
             }
 
             @Override
-            public @NotNull Optional<BaseComponent> getTitle(@NotNull Player player) {
-                return Optional.of(new TextComponent("Per Player Tab"));
+            public @NotNull Optional<IComponent> getTitle(@NotNull Player player) {
+                return Optional.of(BungeeCordComponent.of("Per Player Tab"));
             }
         };
 
@@ -293,6 +280,10 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
         perPlayerBgPlayer.automaticallyShowToPlayers();
     }
 
+    private void testAdventure() {
+
+    }
+
     @EventHandler
     private void onRegister(PlayerRegisteredEvent e) {
         System.out.println("Player " + e.getPlayerUUID() + " has been registered in team " + e.getTeamProgression().getTeamId() + '.');
@@ -311,7 +302,7 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
     }
 
     @EventHandler
-    private void onTeamUpdate(TeamUpdateEvent e) {
+    private void onTeamUpdate(TeamUpdatedEvent e) {
         System.out.println("Player " + e.getPlayerUUID() + " left team " + e.getOldTeamProgression().getTeamId() + '.');
         if (advancedDebugOutput.get()) {
             StringJoiner j = new StringJoiner(", ", "[", "]");
@@ -433,6 +424,38 @@ public class UltimateAdvancementAPITests extends JavaPlugin implements Listener 
                     AdvancementUtils.disableVanillaRecipeAdvancements();
                 } catch (Exception e) {
                     e.printStackTrace();
+                }
+            }
+            case "componentsa" -> {
+                if (sender instanceof Player p) {
+                    AdventureTest.testAdventure(p);
+                } else {
+                    if (args.length < 2) {
+                        sender.sendMessage("§cIllegal syntax.");
+                        return false;
+                    }
+                    Player p = Bukkit.getPlayer(args[1]);
+                    if (p == null) {
+                        sender.sendMessage("§cThat player is not online.");
+                        return false;
+                    }
+                    AdventureTest.testAdventure(p);
+                }
+            }
+            case "componentsb" -> {
+                if (sender instanceof Player p) {
+                    BungeeCordTest.testBungeeCord(p);
+                } else {
+                    if (args.length < 2) {
+                        sender.sendMessage("§cIllegal syntax.");
+                        return false;
+                    }
+                    Player p = Bukkit.getPlayer(args[1]);
+                    if (p == null) {
+                        sender.sendMessage("§cThat player is not online.");
+                        return false;
+                    }
+                    BungeeCordTest.testBungeeCord(p);
                 }
             }
             case "toast" -> {
